@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.HBox?>
+<?import patience.fx.CardView?>
+<?import patience.fx.CardStackView?>
+<?import patience.fx.CardStacksView?>
+<?import javafx.geometry.Dimension2D?>
+<?import java.lang.String?>
+
+<HBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="patience.fx.CardsExampleController">
+	<CardStacksView cardStackSpacing="20">
+		<cardStacks>
+			<CardStackView fx:id="cardStack1" cardScaling="1"
+				onMousePressed="#mousePressed"
+				onMouseDragged="#mouseDragged"
+				onMouseReleased="#mouseReleased"
+			>
+				<faceUpOffset>
+					<Dimension2D width="20" height="20"/>
+				</faceUpOffset>
+				<cards>
+					<CardView card="S1" faceUp="true"/>
+					<CardView card="H5" faceUp="true"/>
+					<CardView card="D10" faceUp="true"/>
+					<CardView card="C11" faceUp="false"/>
+					<CardView card="C11" faceUp="false"/>
+				</cards>
+			</CardStackView>
+			<CardStackView fx:id="cardStack2" cardScaling="1"
+				onMousePressed="#mousePressed"
+				onMouseDragged="#mouseDragged"
+				onMouseReleased="#mouseReleased"
+			>
+				<faceUpOffset>
+					<Dimension2D width="20" height="20"/>
+				</faceUpOffset>
+			</CardStackView>
+		</cardStacks>
+	</CardStacksView>
+</HBox>
