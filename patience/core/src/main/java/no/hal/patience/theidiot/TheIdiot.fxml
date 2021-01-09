@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import patience.fx.CardView?>
+<?import patience.fx.CardStackView?>
+<?import patience.fx.CardStacksView?>
+<?import javafx.geometry.Dimension2D?>
+<?import java.lang.String?>
+
+<VBox fx:id="parent" xmlns:fx="http://javafx.com/fxml/1" fx:controller="patience.theidiot.TheIdiotController"
+		onMousePressed="#mousePressed"
+		onMouseDragged="#mouseDragged"
+		onMouseReleased="#mouseReleased"
+		>
+	<CardStacksView fx:id="suitStacks" cardStackSpacing="20"/>
+	<CardStacksView fx:id="idiotStacks" cardStackSpacing="20"/>
+	<HBox>
+		<CardStacksView fx:id="deckPileStacks" cardStackSpacing="10"
+			onMouseClicked="#deckClicked"
+		/>
+		<CardStackView fx:id="extraPile"/>
+	</HBox>
+</VBox>
