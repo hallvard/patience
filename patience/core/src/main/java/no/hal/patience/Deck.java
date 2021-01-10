@@ -1,4 +1,4 @@
-package patience;
+package no.hal.patience;
 
 import java.util.Random;
 
@@ -12,12 +12,9 @@ public class Deck extends CardStack {
 
 	public Deck(final int shuffleCount) {
 		// iterate over all suits
-		for (final Suit suit: Suit.values()) {
-			// for each suit, go through all 13 values, from 1 to and including 13
-			for (int face = 1; face <= 13; face++) {
-				final Card card = new Card(suit, face);
-				cards.add(card);
-			}
+		for (final CardKind cardKind: CardKind.values()) {
+            final Card card = new Card(cardKind);
+            cards.add(card);
 		}
 		shuffle(shuffleCount);
 	}
