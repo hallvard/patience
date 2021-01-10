@@ -20,7 +20,17 @@ public abstract class FacesPredicate implements CardsPredicate {
         this(face, CardOrder.identity());
     }
 
-    protected abstract boolean test(int expectedFace, int actualFace, int pos);
+    protected abstract boolean test(int initialFace, int actualFace, int pos);
+
+    @Override
+    public boolean test(Card card1, Card card2) {
+        int face = this.face;
+        if (face < 0) {
+            face = cardOrder.ordinal(card1.getCardKind());
+        }
+        return test(face, cardOrder.ordinal(card1.getCardKind()), 0)
+            && test(face, cardOrder.ordinal(card2.getCardKind()), 1);
+    }
 
     @Override
     public boolean test(List<Card> cards) {
@@ -36,15 +46,15 @@ public abstract class FacesPredicate implements CardsPredicate {
                 return false;
             }
         }
-        return false;
+        return true;
     }
 
     //
 
-    private static FacesPredicate stepping(int face, int d, CardOrder cardOrder) {
+    static FacesPredicate stepping(int face, int d, CardOrder cardOrder) {
         return new FacesPredicate(face, cardOrder) {
-            protected boolean test(int expectedFace, int actualFace, int pos) {
-                return actualFace - expectedFace == pos * d;
+            protected boolean test(int initialFace, int actualFace, int pos) {
+                return actualFace - initialFace == pos * d;
             }
         };
     }
