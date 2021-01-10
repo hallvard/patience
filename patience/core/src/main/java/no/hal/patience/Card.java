@@ -1,5 +1,9 @@
 package no.hal.patience;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class Card {
 
 	private final CardKind cardKind;
@@ -8,12 +12,32 @@ public class Card {
 		this.cardKind = cardKind;
 	}
 
+    //
+
+    public static Card valueOf(String s) {
+        return new Card(CardKind.valueOf(s));
+    }
+
+    public static List<Card> cards(final CardKind... initialCards) {
+        return Arrays.stream(initialCards).map(Card::new).collect(Collectors.toList());
+    }
+
+    public static List<Card> cards(final String... initialCards) {
+        return Arrays.stream(initialCards).map(Card::valueOf).collect(Collectors.toList());
+    }
+
+    //
+
 	@Override
 	public String toString() {
 		// concatenate suit and face
 		// the same as suit.concat(String.valueOf(face)), but simpler
 		return getSuit().name();
 	}
+
+    public CardKind getCardKind() {
+        return cardKind;
+    }
 
 	public SuitKind getSuit() {
 		return cardKind.getSuit();
@@ -25,5 +49,5 @@ public class Card {
 
 	public boolean isOppositeColor(final Card other) {
 		return getSuit().isOppositeColor(other.getSuit());
-	}
+    }
 }
