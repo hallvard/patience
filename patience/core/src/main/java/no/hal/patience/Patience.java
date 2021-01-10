@@ -1,5 +1,4 @@
-package patience;
-
+package no.hal.patience;
 
 public abstract class Patience {
 

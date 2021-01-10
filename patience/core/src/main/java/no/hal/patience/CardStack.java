@@ -1,4 +1,4 @@
-package patience;
+package no.hal.patience;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,7 +25,7 @@ public abstract class CardStack {
 	}
 
 	// support for suit-specific CardStacks
-	public Suit getSuit() {
+	public SuitKind getSuit() {
 		return null;
 	}
 
