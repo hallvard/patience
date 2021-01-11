@@ -7,21 +7,27 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * Card stack that receives cards from a source,
- * typically a deck, where only the top one can be moved.
- * @author hal
- *
- */
-public class Pile implements Iterable<Card> {
+import no.hal.patience.util.Cards;
+import no.hal.patience.util.CardsListener;
+import no.hal.patience.util.CardsPredicate;
+
+public class Pile implements Iterable<Card>, Cards {
 
     private CardsPredicate constraint;
+    
     private List<Card> cards;
+
+    private Collection<CardsListener<Pile>> cardsListeners;
 
 	protected Pile(CardsPredicate constraint, final Collection<Card> initialCards) {
         this.constraint = constraint;
-        setAll(initialCards);
+        setAllCards(initialCards);
 	}
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + " of " + cards;
+    }
 
     public void addConstraint(CardsPredicate constraint) {
         if (this.constraint == CardsPredicate.whatever) {
@@ -31,16 +37,38 @@ public class Pile implements Iterable<Card> {
         }
     }
 
-    private void checkConstraints(List<Card> newCards) {
-        if (! constraint.test(newCards)) {
-            throw new IllegalArgumentException(newCards + " is not legal for " + this);
+    public boolean validateConstraint(List<Card> newCards) {
+        return constraint.test(newCards);
+    }
+
+    public void checkConstraints(List<Card> newCards) {
+        if (! validateConstraint(newCards)) {
+            throw new IllegalArgumentException(newCards + " is invalid for " + this);
         }
     }
 
-    private List<Card> setAll(List<Card> newCards) {
+    public void addCardsListener(CardsListener<Pile> listener) {
+        if (cardsListeners == null) {
+            cardsListeners = new ArrayList<>();
+        }
+        cardsListeners.add(listener);
+    }
+
+    public void removeCardsListener(CardsListener<Pile> listener) {
+        if (cardsListeners != null) {
+            cardsListeners.remove(listener);
+        }
+    }
+
+    protected List<Card> setAllCards(List<Card> newCards) {
         checkConstraints(newCards);
         List<Card> oldCards = this.cards;
         this.cards = newCards;
+        if (cardsListeners != null) {
+            for (CardsListener<Pile> listener : cardsListeners) {
+                listener.cardsChanged(this, oldCards, newCards);
+            }
+        }
         return oldCards;
     }
 
@@ -68,6 +96,10 @@ public class Pile implements Iterable<Card> {
     public Iterator<Card> iterator() {
         return cards.iterator();
     }
+    
+    public int getCardCount() {
+        return cards.size();
+    }
 
     private int adjustIndex(int index) {
         if (index > cards.size()) {
@@ -91,6 +123,18 @@ public class Pile implements Iterable<Card> {
         return result;
     }
 
+    public List<Card> getTopCards(int count) {
+        return getCards(getCardCount() - count, getCardCount());
+    }
+
+    public List<Card> getBottomCards(int count) {
+        return getCards(0, count);
+    }
+    
+    public List<Card> getAllCards() {
+        return getCards(0, getCardCount());
+    }
+
     public List<Card> replaceCards(int start, int end, Collection<Card> replacementCards) {
         start = adjustIndex(start);
         end = adjustIndex(end);
@@ -104,27 +148,27 @@ public class Pile implements Iterable<Card> {
         for (int i = end; i < cards.size(); i++) {
             newCards.add(cards.get(i));
         }
-        return setAll(newCards);
+        return setAllCards(newCards);
     }
 
     public List<Card> addCards(Collection<Card> cards) {
         List<Card> newCards = new ArrayList<>(this.cards);
         newCards.addAll(cards);
-        return setAll(newCards);
+        return setAllCards(newCards);
     }
 
     public List<Card> insertCards(int pos, Collection<Card> cards) {
         List<Card> newCards = new ArrayList<>(this.cards);
         newCards.addAll(pos, cards);
-        return setAll(newCards);
+        return setAllCards(newCards);
     }
 
     public List<Card> removeCards(int start, int end) {
         return replaceCards(start, end, Collections.emptyList());
     }
 
-    public List<Card> setAll(Collection<Card> cards) {
-        return setAll(new ArrayList<>(cards));
+    public List<Card> setAllCards(Collection<Card> cards) {
+        return setAllCards(new ArrayList<>(cards));
     }
 
     //
@@ -132,29 +176,6 @@ public class Pile implements Iterable<Card> {
     public List<Card> shuffle() {
         List<Card> newCards = new ArrayList<>(this.cards);
         Collections.shuffle(newCards);
-        return setAll(newCards);
+        return setAllCards(newCards);
     }
-
-    //
-
-	private int revealPos = 0;
-	private boolean revealFromTop = false;
-
-    public int getCardCount() {
-        return cards.size();
-    }
-
-	public void revealCards(final int pos) {
-		revealPos = pos;
-		revealFromTop = false;
-	}
-
-	public void revealTopCards(final int pos) {
-		revealPos = pos;
-		revealFromTop = true;
-	}
-
-	public boolean isFaceUp(final int index) {
-		return index >= (revealFromTop ? getCardCount() - revealPos : revealPos);
-	}
 }

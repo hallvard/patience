@@ -4,7 +4,6 @@ import java.util.List;
 
 import no.hal.patience.Card;
 import no.hal.patience.CardOrder;
-import no.hal.patience.CardsPredicate;
 
 public abstract class FacesPredicate implements CardsPredicate {
 

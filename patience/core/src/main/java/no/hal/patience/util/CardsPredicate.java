@@ -1,7 +1,9 @@
-package no.hal.patience;
+package no.hal.patience.util;
 
 import java.util.List;
 import java.util.function.Predicate;
+
+import no.hal.patience.Card;
 
 @FunctionalInterface
 public interface CardsPredicate extends Predicate<List<Card>> {

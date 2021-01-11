@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import no.hal.patience.util.CardsPredicate;
+
 public class PileTest {
     
     private final Card

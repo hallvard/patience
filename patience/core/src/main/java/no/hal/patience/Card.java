@@ -7,11 +7,12 @@ import java.util.stream.Collectors;
 public class Card {
 
 	private final CardKind cardKind;
+    private boolean faceDown = false;
 
 	public Card(CardKind cardKind) {
 		this.cardKind = cardKind;
-	}
-
+    }
+    
     //
 
     public static Card valueOf(CardKind cardKind) {
@@ -34,7 +35,7 @@ public class Card {
 
 	@Override
 	public String toString() {
-		return getSuit().name() + "-" + getFace();
+		return getSuit().name() + "-" + getFace() + (isFaceDown() ? "'~'" : "");
 	}
 
     public CardKind getCardKind() {
@@ -49,7 +50,11 @@ public class Card {
 		return cardKind.getFace();
 	}
 
-	public boolean isOppositeColor(final Card other) {
-		return getSuit().isOppositeColor(other.getSuit());
+    public boolean isFaceDown() {
+        return faceDown;
+    }
+
+    public void setFaceDown(boolean faceDown) {
+        this.faceDown = faceDown;
     }
 }
