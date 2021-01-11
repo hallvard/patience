@@ -14,6 +14,10 @@ public class Card {
 
     //
 
+    public static Card valueOf(CardKind cardKind) {
+        return new Card(cardKind);
+    }
+
     public static Card valueOf(String s) {
         return new Card(CardKind.valueOf(s));
     }
@@ -30,9 +34,7 @@ public class Card {
 
 	@Override
 	public String toString() {
-		// concatenate suit and face
-		// the same as suit.concat(String.valueOf(face)), but simpler
-		return getSuit().name();
+		return getSuit().name() + "-" + getFace();
 	}
 
     public CardKind getCardKind() {

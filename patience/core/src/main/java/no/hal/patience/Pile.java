@@ -15,37 +15,47 @@ import java.util.List;
  */
 public class Pile implements Iterable<Card> {
 
+    private CardsPredicate constraint;
     private List<Card> cards;
 
-	public Pile(final Collection<Card> initialCards) {
-        this.cards = new ArrayList<>();
+	protected Pile(CardsPredicate constraint, final Collection<Card> initialCards) {
+        this.constraint = constraint;
+        setAll(initialCards);
 	}
-    
-    public Pile(final Card... initialCards) {
-        this(Arrays.asList(initialCards));
+
+    public void addConstraint(CardsPredicate constraint) {
+        if (this.constraint == CardsPredicate.whatever) {
+            this.constraint = constraint;
+        } else {
+            this.constraint = this.constraint.and(constraint);
+        }
     }
 
-    private Collection<CardsPredicate> constraints = new ArrayList<>();
-
-    public void addConstraints(CardsPredicate... constraints) {
-        this.constraints.addAll(Arrays.asList(constraints));
-    }
-
-    private void setAll(List<Card> newCards) {
-        if (! constraints.stream().allMatch(predicate -> predicate.test(this.cards))) {
+    private void checkConstraints(List<Card> newCards) {
+        if (! constraint.test(newCards)) {
             throw new IllegalArgumentException(newCards + " is not legal for " + this);
         }
+    }
+
+    private List<Card> setAll(List<Card> newCards) {
+        checkConstraints(newCards);
+        List<Card> oldCards = this.cards;
         this.cards = newCards;
+        return oldCards;
     }
 
     //
+    
+    public static Pile of(final Card... initialCards) {
+        return new Pile(CardsPredicate.whatever, Arrays.asList(initialCards));
+    }
 
     public static Pile of(final CardKind... initialCards) {
-        return new Pile(Card.cards(initialCards));
+        return new Pile(CardsPredicate.whatever, Card.cards(initialCards));
     }
 
     public static Pile of(final String... initialCards) {
-        return new Pile(Card.cards(initialCards));
+        return new Pile(CardsPredicate.whatever, Card.cards(initialCards));
     }
 
     public static Pile deck() {
@@ -81,7 +91,7 @@ public class Pile implements Iterable<Card> {
         return result;
     }
 
-    public void replaceCards(int start, int end, Collection<Card> replacementCards) {
+    public List<Card> replaceCards(int start, int end, Collection<Card> replacementCards) {
         start = adjustIndex(start);
         end = adjustIndex(end);
         List<Card> newCards = new ArrayList<>(cards.size() - (end - start) + replacementCards.size());
@@ -94,34 +104,35 @@ public class Pile implements Iterable<Card> {
         for (int i = end; i < cards.size(); i++) {
             newCards.add(cards.get(i));
         }
-        setAll(newCards);
+        return setAll(newCards);
     }
 
-    public void addCards(Collection<Card> cards) {
+    public List<Card> addCards(Collection<Card> cards) {
         List<Card> newCards = new ArrayList<>(this.cards);
         newCards.addAll(cards);
-        setAll(newCards);
+        return setAll(newCards);
     }
 
-    public void insertCards(int pos, Collection<Card> cards) {
+    public List<Card> insertCards(int pos, Collection<Card> cards) {
         List<Card> newCards = new ArrayList<>(this.cards);
         newCards.addAll(pos, cards);
-        setAll(newCards);
+        return setAll(newCards);
     }
 
-    public void removeCards(int start, int end) {
-        replaceCards(start, end, Collections.emptyList());
+    public List<Card> removeCards(int start, int end) {
+        return replaceCards(start, end, Collections.emptyList());
     }
 
-    public void setAll(Collection<Card> cards) {
-        cards.clear();
-        cards.addAll(cards);
+    public List<Card> setAll(Collection<Card> cards) {
+        return setAll(new ArrayList<>(cards));
     }
 
     //
 
-    public void shuffle() {
-        Collections.shuffle(cards);
+    public List<Card> shuffle() {
+        List<Card> newCards = new ArrayList<>(this.cards);
+        Collections.shuffle(newCards);
+        return setAll(newCards);
     }
 
     //

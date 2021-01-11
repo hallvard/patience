@@ -25,4 +25,8 @@ public interface CardsPredicate extends Predicate<List<Card>> {
     default public CardsPredicate negate() {
         return cards -> ! test(cards);
     }
+
+    //
+
+    public static CardsPredicate whatever = cards -> true;
 }
