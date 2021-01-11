@@ -3,7 +3,6 @@ package no.hal.patience.util;
 import java.util.List;
 
 import no.hal.patience.Card;
-import no.hal.patience.CardsPredicate;
 
 public class SizePredicate implements CardsPredicate {
 
