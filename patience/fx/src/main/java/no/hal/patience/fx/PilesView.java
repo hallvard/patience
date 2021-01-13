@@ -1,4 +1,4 @@
-package patience.fx;
+package no.hal.patience.fx;
 
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
@@ -7,17 +7,18 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.layout.Region;
+import no.hal.patience.fx.util.NodeAlignment;
 
-public class CardStacksView extends Region {
+public class PilesView extends Region {
 
-	public CardStacksView() {
-		cardStacks.addListener(new ListChangeListener<Object>() {
+	public PilesView() {
+		piles.addListener(new ListChangeListener<Object>() {
 			@Override
 			public void onChanged(javafx.collections.ListChangeListener.Change<? extends Object> o) {
 				updateChildren();
 			}
 		});
-		cardStackSpacing.addListener(layoutChangeListener);
+		pileSpacing.addListener(layoutChangeListener);
 	}
 	
 	private ChangeListener<Object> layoutChangeListener = new ChangeListener<Object>() {
@@ -29,40 +30,40 @@ public class CardStacksView extends Region {
 
 	//
 
-	private ObservableList<CardStackView> cardStacks = FXCollections.observableArrayList();
+	private ObservableList<PileView> piles = FXCollections.observableArrayList();
 
-	public ObservableList<CardStackView> getCardStacks() {
-		return cardStacks;
+	public ObservableList<PileView> getPiles() {
+		return piles;
 	}
 
-	public SimpleDoubleProperty cardStackSpacing = new SimpleDoubleProperty(1.0);
+	public SimpleDoubleProperty pileSpacing = new SimpleDoubleProperty(1.0);
 	
-	public ObservableValue<Number> cardStackSpacingProperty() {
-		return cardStackSpacing;
+	public ObservableValue<Number> pileSpacingProperty() {
+		return pileSpacing;
 	}
-	public double getCardStackSpacing() {
-		return cardStackSpacing.get();
+	public double getPileSpacing() {
+		return pileSpacing.get();
 	}
-	public void setCardStackSpacing(double Spacing) {
-		cardStackSpacing.set(Spacing);
+	public void setPileSpacing(double spacing) {
+		pileSpacing.set(spacing);
 	}
 
 	//
 
 	protected void updateChildren() {
 		getChildren().clear();
-		for (CardStackView cardStack: cardStacks) {
-			getChildren().add(cardStack);
+		for (var pile: piles) {
+			getChildren().add(pile);
 		}
 		updateLayout();
 	}
 
 	protected void updateLayout() {
 		double x = 0.0, y = 0.0;
-		for (CardStackView cardStack: cardStacks) {
-			cardStack.setLayoutX(x);
-			cardStack.setLayoutY(y);
-			x += cardStack.getBoundsInLocal().getWidth() + getCardStackSpacing();
+		for (var pile: piles) {
+			pile.setLayoutX(x);
+			pile.setLayoutY(y);
+			x += pile.getBoundsInLocal().getWidth() + getPileSpacing();
 		}
 	}
 	

@@ -1,54 +1,55 @@
-package patience.fx;
+package no.hal.patience.fx;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Dimension2D;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
-import patience.Card;
-import patience.CardStack;
-import patience.CardStackListener;
 
-public class CardStackView extends Region implements CardStackListener {
+import no.hal.patience.Card;
+import no.hal.patience.Pile;
+import no.hal.patience.fx.util.NodeAlignment;
+import no.hal.patience.util.CardsListener;
 
-	private CardStack cardStack;
+public class PileView extends Region implements CardsListener<Pile> {
 
-	public CardStackView() {
+	private Pile pile;
+
+	public PileView() {
 		this(null);
 	}
 
-	public CardStackView(final CardStack cardStack) {
-		setCardStack(cardStack);
-		cards.addListener((final ListChangeListener.Change<? extends Object> o) -> updateChildren());
-		cardNames.addListener((final ListChangeListener.Change<? extends Object> o) -> updateCardViews());
+	public PileView(final Pile pile) {
+		setPile(pile);
+		pile.addCardsListener((cards, oldCards, newCards) -> updateChildren());
 		faceDownOffset.addListener(layoutChangeListener);
 		faceUpOffset.addListener(layoutChangeListener);
 		cardScaling.addListener(layoutChangeListener);
 	}
 
-	public CardStack getCardStack() {
-		return cardStack;
+	public Pile getPile() {
+		return pile;
 	}
 
-	public void setCardStack(final CardStack cardStack) {
-		if (this.cardStack != null) {
-			cardStack.removeCardsListener(this);
+	public void setPile(final Pile pile) {
+		if (this.pile != null) {
+			pile.removeCardsListener(this);
 		}
-		this.cardStack = cardStack;
-		if (this.cardStack != null) {
-			cardStack.addCardsListener(this);
+		this.pile = pile;
+		if (this.pile != null) {
+			pile.addCardsListener(this);
 		}
-		updateCards();
+		updateCardNames();
 	}
 
 	//
@@ -109,46 +110,28 @@ public class CardStackView extends Region implements CardStackListener {
 
 	//
 
-	@Override
-	public void cardsTurned(final CardStack cardStack, final int start, final int end) {
-		updateCards();
-	}
-	@Override
-	public void cardsAdded(final CardStack cardStack, final int start, final int end) {
-		updateCards();
-	}
-	@Override
-	public void cardsRemoved(final CardStack cardStack, final int start, final int end) {
-		updateCards();
-	}
+    private String getCardName(Card card) {
+        return (card.isFaceDown() ? "~" : "") + card.getSuit().name().substring(0, 1).toUpperCase() + card.getFace();
+    }
 
-	//
+    @Override
+    public void cardsChanged(Pile cards, List<Card> oldCards, List<Card> newCards) {
+        updateCardNames();
+    }
 
-	protected void updateCards() {
-		if (this.cardStack != null && cardStack.getCardCount() > 0) {
-			final Collection<String> cardNames = new ArrayList<>();
-			for (int cardNum = 0; cardNum < cardStack.getCardCount(); cardNum++) {
-				final Card card = cardStack.getCard(cardNum);
-				final String cardName = card.getSuit().name().substring(0, 1).toUpperCase() + card.getFace();
-				cardNames.add(cardName);
-			}
-			this.cardNames.setAll(cardNames);
-		} else {
-			this.cardNames.setAll("");
-		}
+	protected void updateCardNames() {
+        this.cardNames.setAll(pile.getAllCards().stream().map(this::getCardName).collect(Collectors.toList()));
 	}
 
 	protected void updateCardViews() {
 		final Collection<CardView> newCards = new ArrayList<CardView>();
-		int cardNum = 0;
-		for (String cardName: cardNames) {
-			boolean faceUp = (cardStack == null || cardStack.isFaceUp(cardNum));
+		for (var cardName: cardNames) {
+			var faceUp = true;
 			if (cardName.startsWith("~")) {
 				faceUp = false;
 				cardName = cardName.substring(1);
 			}
 			newCards.add(new CardView(cardName, faceUp));
-			cardNum++;
 		}
 		getCards().setAll(newCards);
 	}
@@ -243,20 +226,6 @@ public class CardStackView extends Region implements CardStackListener {
 		draggingOffset = null;
 		dragCardCount = 0;
 		updateLayout();
-	}
-
-	//
-
-	public void cardsTurned(final CardStackView cardStack, final int start, final int end) {
-		updateChildren();
-	}
-
-	public void cardsAdded(final CardStackView cardStack, final int start, final int end) {
-		updateChildren();
-	}
-
-	public void cardsRemoved(final CardStackView cardStack, final int start, final int end) {
-		updateChildren();
 	}
 
 	//

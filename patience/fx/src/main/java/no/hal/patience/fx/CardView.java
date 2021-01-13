@@ -1,4 +1,4 @@
-package patience.fx;
+package no.hal.patience.fx;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;

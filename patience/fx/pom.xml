@@ -82,7 +82,7 @@
                     <plugin>
                         <groupId>org.openjfx</groupId>
                         <artifactId>javafx-maven-plugin</artifactId>
-                        <version>0.0.4</version>
+                        <version>0.0.5</version>
                         <configuration>                    
                             <mainClass>de.jensd.fx.glyphs.fontawesome.demo.FontAwesomeIconsDemoApp</mainClass>
                         </configuration>
@@ -104,12 +104,10 @@
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
-                <version>0.0.4</version>
+                <version>0.0.5</version>
                 <configuration>                    
                     <options>
-                        <!-- 
-                            <option>dash dash enable-preview</option>
-                        -->
+                        <option>--enable-preview</option>
                     </options>
                     <mainClass>no.hal.patience.fx.ExampleApp</mainClass>
                 </configuration>

@@ -1,4 +1,4 @@
-package patience.fx;
+package no.hal.patience.fx;
 
 import java.util.Iterator;
 
@@ -7,9 +7,10 @@ import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.NonInvertibleTransformException;
-import patience.CardStack;
-import patience.CardStackMap;
-import patience.Patience;
+
+import no.hal.patience.Pile;
+import no.hal.patience.fx.util.NodeAlignment;
+import no.hal.patience.Patience;
 
 public abstract class PatienceController<T extends Patience> {
 
@@ -26,36 +27,36 @@ public abstract class PatienceController<T extends Patience> {
 		patience = createPatience();
 	}
 
-	protected CardStackMap stacks = new CardStackMap();
-
-	public abstract Iterator<CardStackView> getSourceStacks();
-	public abstract Iterator<CardStackView> getTargetStacks();
+	public abstract Iterator<PileView> getSourcePiles();
+	public abstract Iterator<PileView> getTargetPiles();
 
 	//
 
-	protected String moveTopCards(final CardStack source, final int cardCount, final CardStack target) {
-		if (! CardStack.canMoveTopCards(source, cardCount, target)) {
+	protected String moveTopCards(final Pile source, final int cardCount, final Pile target) {
+		if (! Pile.canMoveTopCards(source, cardCount, target)) {
 			return "Illegal move";
 		}
-		CardStack.moveTopCards(source, cardCount, target);
+		Pile.moveTopCards(source, cardCount, target);
 		return null;
 	}
 
 	//
 
-	public static CardStack findTarget(final CardStack source, final int cardCount, final Iterator<? extends CardStack> cardStacks) {
-		while (cardStacks.hasNext()) {
-			final CardStack cardStack = cardStacks.next();
-			if (CardStack.canMoveTopCards(source, cardCount, cardStack)) {
-				return cardStack;
+	public static Pile findTarget(final Pile source, final int cardCount, final Iterator<? extends Pile> piles) {
+		while (piles.hasNext()) {
+			final Pile pile = piles.next();
+			if (Pile.canMoveTopCards(source, cardCount, pile)) {
+				return pile;
 			}
 		}
 		return null;
-	}
-	public static CardStack findTarget(final CardStack source, final int cardCount, final Iterator<? extends CardStack>... cardStacks) {
-		CardStack target = null;
-		for (int i = 0; i < cardStacks.length; i++) {
-			final Iterator<? extends CardStack> iterator = cardStacks[i];
+    }
+    
+    /*
+	public static Pile findTarget(final Pile source, final int cardCount, final Iterator<? extends Pile>... piles) {
+		Pile target = null;
+		for (int i = 0; i < piles.length; i++) {
+			final Iterator<? extends Pile> iterator = piles[i];
 			target = findTarget(source, cardCount, iterator);
 			if (target != null) {
 				return target;
@@ -63,9 +64,16 @@ public abstract class PatienceController<T extends Patience> {
 		}
 		return null;
 	}
+    */
 
-	public static CardStack findTarget(final CardStack source, final int cardCount, final CardStackMap cardStacks, final Iterator<? extends Object> keys) {
-		return findTarget(source, cardCount, cardStacks.iterator(keys));
+	public static Pile findTarget(final Pile source, final int cardCount, final Patience patience, final Iterator<? extends Object> keys) {
+        while (keys.hasNext()) {
+            var pile = findTarget(source, cardCount, patience.getPiles(String.valueOf(keys.next())).iterator());
+            if (pile != null) {
+                return pile;
+            }
+        }
+        return null;
 	}
 
 	//
@@ -75,7 +83,7 @@ public abstract class PatienceController<T extends Patience> {
 		while (nodes.hasNext()) {
 			final T node = nodes.next();
 			final Point2D localPoint = getLocalPoint(node, scenePoint);
-			//			System.out.println("Checking " + localPoint + " in " + (node instanceof CardStackView ? ((CardStackView) node).getCardStack() : node));
+			//			System.out.println("Checking " + localPoint + " in " + (node instanceof PileView ? ((PileView) node).getPile() : node));
 			if (node == checkAfter) {
 				found = true;
 			} else if (node.contains(localPoint)) {
@@ -94,20 +102,20 @@ public abstract class PatienceController<T extends Patience> {
 		return null;
 	}
 
-	private CardStackView getCardStack(final Point2D scenePoint, final Iterator<CardStackView> cardStacks, final CardStackView checkAfter) {
-		return getElementAt(cardStacks, scenePoint, checkAfter);
+	private PileView getPile(final Point2D scenePoint, final Iterator<PileView> Piles, final PileView checkAfter) {
+		return getElementAt(Piles, scenePoint, checkAfter);
 	}
 
-	private CardStackView dragging = null;
+	private PileView dragging = null;
 
 	@FXML
 	void mousePressed(final MouseEvent e) {
 		final Point2D scenePoint = getScenePoint(e);
-		dragging = getCardStack(scenePoint, getSourceStacks(), null);
+		dragging = getPile(scenePoint, getSourcePiles(), null);
 		if (dragging != null) {
 			e.consume();
 			dragging.startDragging(scenePoint, null, -1);
-			updateDragStatus(dragging.getCardStack(), dragging.getDragPos(), null);
+			updateDragStatus(dragging.getPile(), dragging.getDragPos(), null);
 		}
 	}
 
@@ -115,8 +123,8 @@ public abstract class PatienceController<T extends Patience> {
 		return new Point2D(e.getSceneX(), e.getSceneY());
 	}
 
-	protected boolean canDrag(final CardStack cardStack) {
-		return cardStack != getPatience().getDeck();
+	protected boolean canDrag(final Pile pile) {
+		return pile != getPatience().getDeck();
 	}
 
 	private boolean isDragging() {
@@ -126,12 +134,12 @@ public abstract class PatienceController<T extends Patience> {
 	public void mouseDragged(final MouseEvent e) {
 		if (isDragging()) {
 			e.consume();
-			if (canDrag(dragging.getCardStack())) {
+			if (canDrag(dragging.getPile())) {
 				final Point2D scenePoint = getScenePoint(e);
 				dragging.drag(scenePoint);
-				final CardStackView dropping = getCardStack(scenePoint, getTargetStacks(), dragging);
+				final PileView dropping = getPile(scenePoint, getTargetPiles(), dragging);
 				if (dropping != null) {
-					updateDragStatus(dragging.getCardStack(), dragging.getDragPos(), dropping.getCardStack());
+					updateDragStatus(dragging.getPile(), dragging.getDragPos(), dropping.getPile());
 				}
 			}
 		}
@@ -140,20 +148,20 @@ public abstract class PatienceController<T extends Patience> {
 	public void mouseReleased(final MouseEvent e) {
 		final Point2D scenePoint = getScenePoint(e);
 		e.consume();
-		final CardStackView dropping = getCardStack(scenePoint, getTargetStacks(), dragging);
-		if (dragging != null && dropping == dragging && dropping.getCardStack() == getPatience().getDeck() && getPatience().canDeal()) {
+		final PileView dropping = getPile(scenePoint, getTargetPiles(), dragging);
+		if (dragging != null && dropping == dragging && dropping.getPile() == getPatience().getDeck() && getPatience().canDeal()) {
 			//			getPatience().deal();
 		} else if (isDragging()) {
-			final CardStack source = dragging.getCardStack();
+			final Pile source = dragging.getPile();
 			final int cardCount = source.getCardCount() - dragging.getDragPos();
 			final Point2D localPoint = getLocalPoint(dragging, scenePoint);
 			dragging.stopDragging(localPoint);
 			dragging = null;
-			CardStack target = null;
+			Pile target = null;
 			if (e.getClickCount() > 1) {
 				target = getDefaultTarget(source, cardCount);
 			} else if (dropping != null) {
-				target = dropping.getCardStack();
+				target = dropping.getPile();
 			}
 			if (target != null && target != source) {
 				moveTopCards(source, cardCount, target);
@@ -165,7 +173,7 @@ public abstract class PatienceController<T extends Patience> {
 		}
 	}
 
-	protected void updateDragStatus(final CardStack source, final int sourceCardPos, final CardStack target) {
+	protected void updateDragStatus(final Pile source, final int sourceCardPos, final Pile target) {
 	}
 
 	public void mouseClicked(final MouseEvent e) {}
@@ -177,8 +185,8 @@ public abstract class PatienceController<T extends Patience> {
 	protected void doFinished(final boolean result) {
 	}
 
-	protected CardStack getDefaultTarget(final CardStack source, final int cardCount) {
-		return findTarget(source, cardCount, stacks.iterator());
+	protected Pile getDefaultTarget(final Pile source, final int cardCount) {
+		return findTarget(source, cardCount, patience.iterator());
 	}
 
 	//

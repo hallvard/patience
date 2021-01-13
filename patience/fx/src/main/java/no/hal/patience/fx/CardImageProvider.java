@@ -1,4 +1,4 @@
-package patience.fx;
+package no.hal.patience.fx;
 
 import java.net.URL;
 import java.util.HashMap;

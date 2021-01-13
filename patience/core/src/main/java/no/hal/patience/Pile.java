@@ -178,4 +178,13 @@ public class Pile implements Iterable<Card>, Cards {
         Collections.shuffle(newCards);
         return setAllCards(newCards);
     }
+
+    //
+
+	public static boolean canMoveTopCards(Pile source, int cardCount, Pile target) {
+		return false;
+	}
+
+	public static void moveTopCards(Pile source, int cardCount, Pile target) {
+	}
 }

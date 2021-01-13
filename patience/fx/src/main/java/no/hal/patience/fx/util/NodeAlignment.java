@@ -1,4 +1,4 @@
-package patience.fx;
+package no.hal.patience.fx.util;
 
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
@@ -17,18 +17,18 @@ public class NodeAlignment {
 		this.spacing = spacing;
 	}
 	
-	static NodeAlignment at(Node relativeTo) { return new NodeAlignment(relativeTo, 0.0f, 0.0f, 0.0);}
-	static NodeAlignment centeredOn(Node relativeTo) { return new NodeAlignment(relativeTo, 0.5f, -0.5f, 0.0);}
+	public static NodeAlignment at(Node relativeTo) { return new NodeAlignment(relativeTo, 0.0f, 0.0f, 0.0);}
+	public static NodeAlignment centeredOn(Node relativeTo) { return new NodeAlignment(relativeTo, 0.5f, -0.5f, 0.0);}
 
-	static NodeAlignment above(Node relativeTo, double spacing) { return new NodeAlignment(relativeTo, 0.0f, -1.0f, spacing);}
-	static NodeAlignment leftOf(Node relativeTo, double spacing) { return new NodeAlignment(relativeTo, 0.0f, -1.0f, spacing);}
+	public static NodeAlignment above(Node relativeTo, double spacing) { return new NodeAlignment(relativeTo, 0.0f, -1.0f, spacing);}
+	public static NodeAlignment leftOf(Node relativeTo, double spacing) { return new NodeAlignment(relativeTo, 0.0f, -1.0f, spacing);}
 	
-	static NodeAlignment below(Node relativeTo, double spacing) { return new NodeAlignment(relativeTo, 1.0f, 0.0f, spacing);}
-	static NodeAlignment rightOf(Node relativeTo, double spacing) { return new NodeAlignment(relativeTo, 1.0f, 0.0f, spacing);}
+	public static NodeAlignment below(Node relativeTo, double spacing) { return new NodeAlignment(relativeTo, 1.0f, 0.0f, spacing);}
+	public static NodeAlignment rightOf(Node relativeTo, double spacing) { return new NodeAlignment(relativeTo, 1.0f, 0.0f, spacing);}
 	
 	//
 
-	static void locate(Node node, NodeAlignment xAlignment, NodeAlignment yAlignment) {
+	public static void locate(Node node, NodeAlignment xAlignment, NodeAlignment yAlignment) {
 		double x = xAlignment.relativeTo.getLayoutX() + xAlignment.relativeTo.getBoundsInLocal().getWidth() * xAlignment.relativeAlignment;
 		double y = yAlignment.relativeTo.getLayoutY() + yAlignment.relativeTo.getBoundsInLocal().getHeight() * yAlignment.relativeAlignment;
 		Bounds nodeBounds = node.getBoundsInLocal();
@@ -40,10 +40,10 @@ public class NodeAlignment {
 		}
 	}
 
-	static void xLocate(Node node, NodeAlignment xAlignment) {
+	public static void xLocate(Node node, NodeAlignment xAlignment) {
 		locate(node, xAlignment, at(node));
 	}
-	static void yLocate(Node node, NodeAlignment yAlignment) {
+	public static void yLocate(Node node, NodeAlignment yAlignment) {
 		locate(node, at(node), yAlignment);
 	}
 }
