@@ -73,7 +73,19 @@ public class Pile implements Iterable<Card>, Cards {
     }
 
     //
-    
+
+    public static Pile empty(CardsPredicate... predicates) {
+        CardsPredicate cardsPredicate = CardsPredicate.whatever;
+        for (var predicate : predicates) {
+            cardsPredicate = cardsPredicate.and(predicate);
+        }
+        return new Pile(cardsPredicate, Collections.emptyList());
+    }
+
+    public static Pile of(final Collection<Card> initialCards) {
+        return new Pile(CardsPredicate.whatever, initialCards);
+    }
+
     public static Pile of(final Card... initialCards) {
         return new Pile(CardsPredicate.whatever, Arrays.asList(initialCards));
     }

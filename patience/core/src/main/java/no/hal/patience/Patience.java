@@ -3,12 +3,17 @@ package no.hal.patience;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 public abstract class Patience implements Iterable<Pile> {
     
-    private Map<String, Collection<Pile>> piles;
+    private Map<String, Collection<Pile>> piles = new HashMap<>();
+
+    protected void putPiles(String category, Collection<Pile> piles) {
+        this.piles.put(category, piles);
+    }
 
     public abstract void initPiles();
 

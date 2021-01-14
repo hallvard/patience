@@ -24,7 +24,8 @@ public abstract class PatienceController<T extends Patience> {
 
 	@FXML
 	protected void initialize() {
-		patience = createPatience();
+        patience = createPatience();
+        patience.initPiles();
 	}
 
 	public abstract Iterator<PileView> getSourcePiles();

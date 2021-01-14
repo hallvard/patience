@@ -12,12 +12,7 @@ import no.hal.patience.fx.util.NodeAlignment;
 public class PilesView extends Region {
 
 	public PilesView() {
-		piles.addListener(new ListChangeListener<Object>() {
-			@Override
-			public void onChanged(javafx.collections.ListChangeListener.Change<? extends Object> o) {
-				updateChildren();
-			}
-		});
+		piles.addListener((ListChangeListener.Change<? extends Object> change) -> updateChildren());
 		pileSpacing.addListener(layoutChangeListener);
 	}
 	
@@ -54,7 +49,8 @@ public class PilesView extends Region {
 		getChildren().clear();
 		for (var pile: piles) {
 			getChildren().add(pile);
-		}
+        }
+        System.out.println("Updating layout for " + piles.size() + " piles");
 		updateLayout();
 	}
 

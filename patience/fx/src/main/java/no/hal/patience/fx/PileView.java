@@ -10,6 +10,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Dimension2D;
 import javafx.geometry.Point2D;
@@ -30,11 +31,12 @@ public class PileView extends Region implements CardsListener<Pile> {
 	}
 
 	public PileView(final Pile pile) {
-		setPile(pile);
-		pile.addCardsListener((cards, oldCards, newCards) -> updateChildren());
-		faceDownOffset.addListener(layoutChangeListener);
+        faceDownOffset.addListener(layoutChangeListener);
 		faceUpOffset.addListener(layoutChangeListener);
-		cardScaling.addListener(layoutChangeListener);
+        cardScaling.addListener(layoutChangeListener);
+        cardNames.addListener((ListChangeListener.Change<? extends Object> change) -> updateCardViews());
+        cards.addListener((ListChangeListener.Change<? extends Object> change) -> updateChildren());
+        setPile(pile);
 	}
 
 	public Pile getPile() {
@@ -49,7 +51,7 @@ public class PileView extends Region implements CardsListener<Pile> {
 		if (this.pile != null) {
 			pile.addCardsListener(this);
 		}
-		updateCardNames();
+        updateCardNames();
 	}
 
 	//
@@ -58,17 +60,17 @@ public class PileView extends Region implements CardsListener<Pile> {
 
 	//
 
-	private final ObservableList<CardView> cards = FXCollections.observableArrayList();
-
-	public ObservableList<CardView> getCards() {
-		return cards;
-	}
-
 	private final ObservableList<String> cardNames = FXCollections.observableArrayList();
-
+    
 	public ObservableList<String> getCardNames() {
-		return cardNames;
+        return cardNames;
 	}
+    
+    private final ObservableList<CardView> cards = FXCollections.observableArrayList();
+
+    public ObservableList<CardView> getCards() {
+        return cards;
+    }
 
 	//
 
@@ -121,9 +123,14 @@ public class PileView extends Region implements CardsListener<Pile> {
 
 	protected void updateCardNames() {
         this.cardNames.setAll(pile.getAllCards().stream().map(this::getCardName).collect(Collectors.toList()));
+        if (this.cardNames.isEmpty()) {
+            // placeholder
+            this.cardNames.setAll("");
+        }
 	}
 
 	protected void updateCardViews() {
+        System.out.println("Updating card views for " + getCardNames());
 		final Collection<CardView> newCards = new ArrayList<CardView>();
 		for (var cardName: cardNames) {
 			var faceUp = true;
@@ -143,6 +150,7 @@ public class PileView extends Region implements CardsListener<Pile> {
 			cardNode.setScaleY(getCardScaling());
 			getChildren().add(cardNode);
 		}
+        System.out.println("Updating children layout (" + getChildren().size()  + ") for " + getCardNames());
 		updateLayout();
 	}
 
