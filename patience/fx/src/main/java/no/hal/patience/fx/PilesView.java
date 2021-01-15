@@ -1,11 +1,13 @@
 package no.hal.patience.fx;
 
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.geometry.Dimension2D;
 import javafx.scene.layout.Region;
 import no.hal.patience.fx.util.NodeAlignment;
 
@@ -74,5 +76,45 @@ public class PilesView extends Region {
 	}
 	public void yLocate(NodeAlignment yAlignment) {
 		NodeAlignment.yLocate(this, yAlignment);
+    }
+    
+    // pile properties, overrides those on children if set
+
+
+	public SimpleDoubleProperty cardScaling = new SimpleDoubleProperty(1.0);
+
+	public ObservableValue<Number> cardScalingProperty() {
+		return cardScaling;
 	}
+	public double getCardScaling() {
+		return cardScaling.get();
+	}
+	public void setCardScaling(final double scaling) {
+		cardScaling.set(scaling);
+	}
+
+	public SimpleObjectProperty<Dimension2D> faceDownOffset = new SimpleObjectProperty<Dimension2D>(new Dimension2D(10.0,  10.0));
+
+	public ObservableValue<Dimension2D> faceDownOffsetProperty() {
+		return faceDownOffset;
+	}
+	public Dimension2D getFaceDownOffset() {
+		return faceDownOffset.get();
+	}
+	public void setFaceDownOffset(final Dimension2D offset) {
+		faceDownOffset.set(offset);
+	}
+
+	public SimpleObjectProperty<Dimension2D> faceUpOffset = new SimpleObjectProperty<Dimension2D>(new Dimension2D(10.0,  10.0));
+
+	public ObservableValue<Dimension2D> faceUpOffsetProperty() {
+		return faceUpOffset;
+	}
+	public Dimension2D getFaceUpOffset() {
+		return faceUpOffset.get();
+	}
+	public void setFaceUpOffset(final Dimension2D offset) {
+		faceUpOffset.set(offset);
+	}
+
 }
