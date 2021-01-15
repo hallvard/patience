@@ -30,7 +30,6 @@ public class CardsExampleController extends PatienceController<CardsExampleContr
             putPiles("sources", sourcePiles);
     
             Pile deck = Pile.deck();
-            deck.shuffle();
             List<Card> cards = deck.getAllCards();
             int pileCount = 6;
             List<Collection<Card>> allCards = new ArrayList<Collection<Card>>();

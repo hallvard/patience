@@ -99,7 +99,9 @@ public class Pile implements Iterable<Card>, Cards {
     }
 
     public static Pile deck() {
-        return Pile.of(CardKind.values());
+        Pile deck = Pile.of(CardKind.values());
+        deck.shuffle();
+        return deck;
     }
 
     //
@@ -189,6 +191,12 @@ public class Pile implements Iterable<Card>, Cards {
         List<Card> newCards = new ArrayList<>(this.cards);
         Collections.shuffle(newCards);
         return setAllCards(newCards);
+    }
+
+    public List<Card> takeCards(int count) {
+        List<Card> cards = getTopCards(count);
+        removeCards(cards.size() - count, cards.size());
+        return cards;
     }
 
     //

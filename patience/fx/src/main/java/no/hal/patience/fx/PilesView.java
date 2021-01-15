@@ -9,13 +9,15 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Dimension2D;
 import javafx.scene.layout.Region;
+import no.hal.patience.fx.util.FxUtil;
 import no.hal.patience.fx.util.NodeAlignment;
 
 public class PilesView extends Region {
 
 	public PilesView() {
-		piles.addListener((ListChangeListener.Change<? extends Object> change) -> updateChildren());
-		pileSpacing.addListener(layoutChangeListener);
+        piles.addListener((ListChangeListener.Change<? extends Object> change) -> updateChildren());
+        pileSpacing.addListener(layoutChangeListener);
+        registerPileViewPropertyListeners();
 	}
 	
 	private ChangeListener<Object> layoutChangeListener = new ChangeListener<Object>() {
@@ -78,43 +80,48 @@ public class PilesView extends Region {
 		NodeAlignment.yLocate(this, yAlignment);
     }
     
-    // pile properties, overrides those on children if set
+    // pile view properties, overrides those on children if set
 
+    protected void registerPileViewPropertyListeners() {
+        pilesCardScaling.addListener((prop, oldValue, newValue) -> FxUtil.setProperties("cardScaling", Number.class, newValue, getPiles()));
+        pilesFaceDownOffset.addListener((prop, oldValue, newValue) -> FxUtil.setProperties("faceDownOffset", Dimension2D.class, newValue, getPiles()));
+        pilesFaceUpOffset.addListener((prop, oldValue, newValue) -> FxUtil.setProperties("faceUpOffset", Dimension2D.class, newValue, getPiles()));
+    }
 
-	public SimpleDoubleProperty cardScaling = new SimpleDoubleProperty(1.0);
+	public SimpleDoubleProperty pilesCardScaling = new SimpleDoubleProperty(1.0);
 
-	public ObservableValue<Number> cardScalingProperty() {
-		return cardScaling;
+	public ObservableValue<Number> pilesCardScalingProperty() {
+		return pilesCardScaling;
 	}
-	public double getCardScaling() {
-		return cardScaling.get();
+	public double getPilesCardScaling() {
+		return pilesCardScaling.get();
 	}
-	public void setCardScaling(final double scaling) {
-		cardScaling.set(scaling);
-	}
-
-	public SimpleObjectProperty<Dimension2D> faceDownOffset = new SimpleObjectProperty<Dimension2D>(new Dimension2D(10.0,  10.0));
-
-	public ObservableValue<Dimension2D> faceDownOffsetProperty() {
-		return faceDownOffset;
-	}
-	public Dimension2D getFaceDownOffset() {
-		return faceDownOffset.get();
-	}
-	public void setFaceDownOffset(final Dimension2D offset) {
-		faceDownOffset.set(offset);
+	public void setPilesCardScaling(final double scaling) {
+		pilesCardScaling.set(scaling);
 	}
 
-	public SimpleObjectProperty<Dimension2D> faceUpOffset = new SimpleObjectProperty<Dimension2D>(new Dimension2D(10.0,  10.0));
+	public SimpleObjectProperty<Dimension2D> pilesFaceDownOffset = new SimpleObjectProperty<Dimension2D>(new Dimension2D(10.0,  10.0));
 
-	public ObservableValue<Dimension2D> faceUpOffsetProperty() {
-		return faceUpOffset;
+	public ObservableValue<Dimension2D> pilesFaceDownOffsetProperty() {
+		return pilesFaceDownOffset;
 	}
-	public Dimension2D getFaceUpOffset() {
-		return faceUpOffset.get();
+	public Dimension2D getPilesFaceDownOffset() {
+		return pilesFaceDownOffset.get();
 	}
-	public void setFaceUpOffset(final Dimension2D offset) {
-		faceUpOffset.set(offset);
+	public void setPilesFFaceDownOffset(final Dimension2D offset) {
+		pilesFaceDownOffset.set(offset);
+	}
+
+	public SimpleObjectProperty<Dimension2D> pilesFaceUpOffset = new SimpleObjectProperty<Dimension2D>(new Dimension2D(10.0,  10.0));
+
+	public ObservableValue<Dimension2D> pilesFaceUpOffsetProperty() {
+		return pilesFaceUpOffset;
+	}
+	public Dimension2D getPilesFaceUpOffset() {
+		return pilesFaceUpOffset.get();
+	}
+	public void setPilesFaceUpOffset(final Dimension2D offset) {
+		pilesFaceUpOffset.set(offset);
 	}
 
 }

@@ -1,6 +1,8 @@
 package no.hal.patience.fx;
 
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.stream.Collectors;
 
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
@@ -27,6 +29,14 @@ public abstract class PatienceController<T extends Patience> {
         patience = createPatience();
         patience.initPiles();
 	}
+
+    protected void createPileViews(Collection<Pile> piles) {
+        piles.stream().map(pile -> new PileView(pile)).collect(Collectors.toList());
+    }
+
+    protected void createPileViews(String category) {
+        createPileViews(getPatience().getPiles("sources"));
+    }
 
 	public abstract Iterator<PileView> getSourcePiles();
 	public abstract Iterator<PileView> getTargetPiles();

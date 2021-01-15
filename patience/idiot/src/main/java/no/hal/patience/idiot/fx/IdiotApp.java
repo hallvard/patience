@@ -1,4 +1,6 @@
-package no.hal.patience.fx;
+package no.hal.patience.idiot.fx;
+
+import no.hal.patience.fx.PatienceApp;
 
 public class IdiotApp extends PatienceApp {
 

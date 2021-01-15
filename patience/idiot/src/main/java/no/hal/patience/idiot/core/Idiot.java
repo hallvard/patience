@@ -1,36 +1,43 @@
-package no.hal.patience.idiot.fx;
+package no.hal.patience.idiot.core;
 
-public class Idiot {
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
+import no.hal.patience.Card;
+import no.hal.patience.Patience;
+import no.hal.patience.Pile;
+import no.hal.patience.SuitKind;
+import no.hal.patience.util.SuitsPredicate;
+
+public class Idiot extends Patience {
     
-    private List<Pile> sourcePiles;
-    private List<Pile> targetPiles;
+    private final Pile[] stacks = new Pile[SuitKind.values().length];
+    private Pile extraCards;
+    private final Pile[] suits = new Pile[SuitKind.values().length];
 
     @Override
     public void initPiles() {
-        sourcePiles = new ArrayList<>();
         for (var suit : SuitKind.values()) {
-            sourcePiles.add(Pile.empty(SuitsPredicate.sameAs(suit)));
+            suits[suit.ordinal()] = Pile.empty(SuitsPredicate.sameAs(suit));
         }
-        System.out.println(sourcePiles);
-        putPiles("sources", sourcePiles);
+        putPiles("suits", Arrays.asList(suits));
 
         Pile deck = Pile.deck();
-        deck.shuffle();
-        List<Card> cards = deck.getAllCards();
-        int pileCount = 6;
-        List<Collection<Card>> allCards = new ArrayList<Collection<Card>>();
-        for (int i = 0; i < pileCount; i++) {
-            allCards.add(new ArrayList<>());
+        List<Card> stackCards = deck.takeCards(stacks.length);
+        for (int i = 0; i < stackCards.size(); i++) {
+            Card card = stackCards.get(i);
+            card.setFaceDown(true);
+            stacks[i] = Pile.of(card);
         }
-        for (int i = 0; i < cards.size(); i++) {
-            allCards.get(i % pileCount).add(cards.get(i));
-        }
-        targetPiles = new ArrayList<>();
-        for (int i = 0; i < pileCount; i++) {
-            targetPiles.add(Pile.of(allCards.get(i)));
-        }
-        System.out.println(targetPiles);
-        putPiles("targets", targetPiles);
+        putPiles("stacks", Arrays.asList(suits));
+    
+        extraCards = Pile.of(deck.takeCards(12));
+        putPiles("extras", Arrays.asList(extraCards));
+
+        putPile(Patience.DECK_PILE_NAME, deck);
+        putPile("deck2", Pile.empty());
     }
 
     @Override

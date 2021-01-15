@@ -1,4 +1,4 @@
-package no.hal.patience.fx;
+package no.hal.patience.idiot.fx;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,9 +11,13 @@ import no.hal.patience.Card;
 import no.hal.patience.Patience;
 import no.hal.patience.Pile;
 import no.hal.patience.SuitKind;
+import no.hal.patience.fx.PatienceController;
+import no.hal.patience.fx.PileView;
+import no.hal.patience.fx.PilesView;
+import no.hal.patience.idiot.core.Idiot;
 import no.hal.patience.util.SuitsPredicate;
 
-public class IdiotController extends PatienceController<IdiotPatience> {
+public class IdiotController extends PatienceController<Idiot> {
 
     static class ExamplesPatience extends Patience {
 
@@ -60,8 +64,8 @@ public class IdiotController extends PatienceController<IdiotPatience> {
     }
 
     @Override
-    protected ExamplesPatience createPatience() {
-        return new ExamplesPatience();
+    protected Idiot createPatience() {
+        return new Idiot();
     }
     
     //
