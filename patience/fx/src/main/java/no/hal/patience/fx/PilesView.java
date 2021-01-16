@@ -83,9 +83,9 @@ public class PilesView extends Region {
     // pile view properties, overrides those on children if set
 
     protected void registerPileViewPropertyListeners() {
-        pilesCardScaling.addListener((prop, oldValue, newValue) -> FxUtil.setPileViewProperties(PileView::cardScaling, (Double) newValue, getPiles()));
-        pilesFaceDownOffset.addListener((prop, oldValue, newValue) -> FxUtil.setPileViewProperties(PileView::faceDownOffset, newValue, getPiles()));
-        pilesFaceUpOffset.addListener((prop, oldValue, newValue) -> FxUtil.setPileViewProperties(PileView::faceUpOffset, newValue, getPiles()));
+        pilesCardScaling.addListener((prop, oldValue, newValue) -> FxUtil.setPileViewProperties(PileView::cardScalingProperty, (Double) newValue, getPiles()));
+        pilesFaceDownOffset.addListener((prop, oldValue, newValue) -> FxUtil.setPileViewProperties(PileView::faceDownOffsetProperty, newValue, getPiles()));
+        pilesFaceUpOffset.addListener((prop, oldValue, newValue) -> FxUtil.setPileViewProperties(PileView::faceUpOffsetProperty, newValue, getPiles()));
     }
 
 	public SimpleDoubleProperty pilesCardScaling = new SimpleDoubleProperty(1.0);
