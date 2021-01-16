@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javafx.fxml.FXML;
 import no.hal.patience.Card;
 import no.hal.patience.Patience;
 import no.hal.patience.Pile;
 import no.hal.patience.SuitKind;
+import no.hal.patience.fx.util.FxUtil;
 import no.hal.patience.util.SuitsPredicate;
 
 public class CardsExampleController extends PatienceController<CardsExampleController.ExamplesPatience> {
@@ -73,8 +73,8 @@ public class CardsExampleController extends PatienceController<CardsExampleContr
 
 	protected void initialize() {
         super.initialize();
-        sources.getPiles().addAll(getPatience().getPiles("sources").stream().map(pile -> new PileView(pile)).collect(Collectors.toList()));
-        targets.getPiles().addAll(getPatience().getPiles("targets").stream().map(pile -> new PileView(pile)).collect(Collectors.toList()));
+        sources.getPiles().addAll(FxUtil.createPileViews(patience, "sources"));
+        targets.getPiles().addAll(FxUtil.createPileViews(patience, "targets"));
     }
 
     @Override

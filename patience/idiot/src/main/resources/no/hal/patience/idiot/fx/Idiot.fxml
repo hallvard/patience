@@ -2,8 +2,17 @@
 
 <?import javafx.scene.layout.VBox?>
 <?import no.hal.patience.fx.PilesView?>
+<?import no.hal.patience.fx.PileView?>
+<?import javafx.scene.layout.HBox?>
 
 <VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="no.hal.patience.idiot.fx.IdiotController">
-	<PilesView fx:id="sources" pileSpacing="20"/>
-	<PilesView fx:id="targets" pileSpacing="10"/>
+    <PilesView fx:id="suits" pileSpacing="20"/>
+    <HBox>
+        <PilesView fx:id="stacks" pileSpacing="10"/>
+        <PileView fx:id="extras"/>
+    </HBox>
+    <HBox>
+        <PileView fx:id="deck"/>
+        <PileView fx:id="deck2"/>
+    </HBox>
 </VBox>

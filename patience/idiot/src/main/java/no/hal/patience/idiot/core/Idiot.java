@@ -25,7 +25,10 @@ public class Idiot extends Patience {
         putPiles("suits", Arrays.asList(suits));
 
         Pile deck = Pile.deck();
-        List<Card> stackCards = deck.takeCards(stacks.length);
+        List<Card> suitStartCard = deck.takeCards(1);
+        suits[0].addCards(suitStartCard);
+    
+        List<Card> stackCards = deck.takeCards(4);
         for (int i = 0; i < stackCards.size(); i++) {
             Card card = stackCards.get(i);
             card.setFaceDown(true);

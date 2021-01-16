@@ -11,6 +11,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.NonInvertibleTransformException;
 
 import no.hal.patience.Pile;
+import no.hal.patience.fx.util.FxUtil;
 import no.hal.patience.fx.util.NodeAlignment;
 import no.hal.patience.Patience;
 
@@ -30,12 +31,12 @@ public abstract class PatienceController<T extends Patience> {
         patience.initPiles();
 	}
 
-    protected void createPileViews(Collection<Pile> piles) {
-        piles.stream().map(pile -> new PileView(pile)).collect(Collectors.toList());
+    protected Collection<PileView> createPileViews(Collection<Pile> piles) {
+        return FxUtil.createPileViews(piles);
     }
 
-    protected void createPileViews(String category) {
-        createPileViews(getPatience().getPiles("sources"));
+    protected Collection<PileView>  createPileViews(String category) {
+        return createPileViews(getPatience().getPiles(category));
     }
 
 	public abstract Iterator<PileView> getSourcePiles();
