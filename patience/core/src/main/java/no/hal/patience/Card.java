@@ -35,7 +35,7 @@ public class Card {
 
 	@Override
 	public String toString() {
-		return getSuit().name() + "-" + getFace() + (isFaceDown() ? "'~'" : "");
+		return getSuit().name() + "-" + getFace() + (isFaceDown() ? "~" : "");
 	}
 
     public CardKind getCardKind() {
@@ -56,5 +56,9 @@ public class Card {
 
     public void setFaceDown(boolean faceDown) {
         this.faceDown = faceDown;
+    }
+
+    public void turn() {
+        faceDown = ! faceDown;
     }
 }

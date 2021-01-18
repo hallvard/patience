@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -122,7 +121,9 @@ public class PileView extends Region implements CardsListener<Pile> {
     }
 
 	protected void updateCardNames() {
-        this.cardNames.setAll(pile.getAllCards().stream().map(this::getCardName).collect(Collectors.toList()));
+        if (pile != null) {
+            this.cardNames.setAll(pile.getAllCards().stream().map(this::getCardName).collect(Collectors.toList()));
+        }
         if (this.cardNames.isEmpty()) {
             // placeholder
             this.cardNames.setAll("");

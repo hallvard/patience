@@ -1,18 +1,14 @@
 package no.hal.patience.idiot.fx;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javafx.fxml.FXML;
 import no.hal.patience.Patience;
-import no.hal.patience.Pile;
 import no.hal.patience.fx.PatienceController;
 import no.hal.patience.fx.PileView;
 import no.hal.patience.fx.PilesView;
-import no.hal.patience.fx.util.FxUtil;
 import no.hal.patience.idiot.core.Idiot;
 
 public class IdiotController extends PatienceController<Idiot> {
@@ -41,6 +37,9 @@ public class IdiotController extends PatienceController<Idiot> {
 
 	protected void initialize() {
         super.initialize();
+
+        System.out.println(patience);
+
         suits.getPiles().addAll(createPileViews("suits"));
         stacks.getPiles().addAll(createPileViews("stacks"));
         extras.setPile(getPatience().getPile("extras"));

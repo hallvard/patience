@@ -18,6 +18,11 @@ public class SizePredicate implements CardsPredicate {
     }
 
     @Override
+    public String toString() {
+        return "[SizePredicate min=" + min + " max=" + max + "]";
+    }
+
+    @Override
     public boolean test(Card card1, Card card2) {
         return test(2);
     }

@@ -19,6 +19,10 @@ public abstract class FacesPredicate implements CardsPredicate {
         this(face, CardOrder.identity());
     }
 
+    @Override
+    public String toString() {
+        return "[FacesPredicate face=" + face + "]";
+    }
     protected abstract boolean test(int initialFace, int actualFace, int pos);
 
     @Override

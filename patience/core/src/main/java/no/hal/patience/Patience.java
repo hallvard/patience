@@ -1,7 +1,6 @@
 package no.hal.patience;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,6 +11,23 @@ public abstract class Patience implements Iterable<Pile> {
     
     private Map<String, Collection<Pile>> piless = new HashMap<>();
     private Map<String, Pile> piles = new HashMap<>();
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder("[" + getClass().getSimpleName() + "\n");
+        for (var piles : piless.keySet()) {
+            int num = 0;
+            for (var pile : piless.get(piles)) {
+                builder.append("   " + piles + "." + num + "=" + pile + "\n");
+                num++;
+            }
+        }
+        for (var pile : piles.keySet()) {
+            builder.append("   " + pile + "=" + piles.get(pile) + "\n");
+        }
+        builder.append("]");
+        return builder.toString();
+    }
 
     protected void putPiles(String category, Collection<Pile> piles) {
         this.piless.put(category, piles);

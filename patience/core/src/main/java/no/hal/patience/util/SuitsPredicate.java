@@ -13,6 +13,11 @@ public abstract class SuitsPredicate implements CardsPredicate {
         this.suit = suitKind;
     }
 
+    @Override
+    public String toString() {
+        return "[SuitsPredicate suit=" + suit + "]";
+    }
+
     protected abstract boolean test(SuitKind initialSuitKind, SuitKind actualSuitKind, int pos);
 
     @Override

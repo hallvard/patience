@@ -43,7 +43,7 @@ public class Pile implements Iterable<Card>, Cards {
 
     public void checkConstraints(List<Card> newCards) {
         if (! validateConstraint(newCards)) {
-            throw new IllegalArgumentException(newCards + " is invalid for " + this);
+            throw new IllegalArgumentException(newCards + " is invalid for " + constraint);
         }
     }
 
@@ -193,10 +193,57 @@ public class Pile implements Iterable<Card>, Cards {
         return setAllCards(newCards);
     }
 
-    public List<Card> takeCards(int count) {
-        List<Card> cards = getTopCards(count);
+    private List<Card> takeCards(int count, boolean reverse) {
+        List<Card> topCards = getTopCards(count);
         removeCards(cards.size() - count, cards.size());
-        return cards;
+        if (reverse) {
+            Collections.reverse(topCards);
+        }
+        return topCards;
+    }
+
+    public List<Card> takeCards(int count) {
+        return takeCards(count, false);
+    }
+
+    public List<Card> takeCardsReversed(int count) {
+        return takeCards(count, true);
+    }
+
+    public Card takeCard() {
+        return takeCards(1).get(0);
+    }
+
+    //
+
+    private static void moveCards(Pile source, Pile target, int cardCount, boolean reverse, boolean turn) {
+        List<Card> cards = source.takeCards(cardCount, reverse);
+        if (turn) {
+            for (Card card : cards) {
+                card.turn();
+            }
+        }
+        target.addCards(cards);
+    }
+
+    public static void moveCards(Pile source, Pile target, int cardCount) {
+        moveCards(source, target, cardCount, false, false);
+    }
+
+    public static void moveCard(Pile source, Pile target) {
+        moveCards(source, target, 1);
+    }
+
+    public static void moveCardsReversed(Pile source, Pile target, int cardCount) {
+        moveCards(source, target, cardCount, true, false);
+    }
+
+    public static void moveCardsTurning(Pile source, Pile target, int cardCount) {
+        moveCards(source, target, cardCount, false, true);
+    }
+
+    public static void moveCardsReversedTurning(Pile source, Pile target, int cardCount) {
+        moveCards(source, target, cardCount, true, true);
     }
 
     //
