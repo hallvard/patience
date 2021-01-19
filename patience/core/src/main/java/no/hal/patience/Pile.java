@@ -149,7 +149,7 @@ public class Pile implements Iterable<Card>, Cards {
         return getCards(0, getCardCount());
     }
 
-    public List<Card> replaceCards(int start, int end, Collection<Card> replacementCards) {
+    List<Card> replacedCards(int start, int end, Collection<Card> replacementCards) {
         start = adjustIndex(start);
         end = adjustIndex(end);
         List<Card> newCards = new ArrayList<>(cards.size() - (end - start) + replacementCards.size());
@@ -162,23 +162,35 @@ public class Pile implements Iterable<Card>, Cards {
         for (int i = end; i < cards.size(); i++) {
             newCards.add(cards.get(i));
         }
-        return setAllCards(newCards);
+        return newCards;
+    }
+    public List<Card> replaceCards(int start, int end, Collection<Card> replacementCards) {
+        return setAllCards(replacedCards(start, end, replacementCards));
     }
 
-    public List<Card> addCards(Collection<Card> cards) {
+    List<Card> addedCards(Collection<Card> cards) {
         List<Card> newCards = new ArrayList<>(this.cards);
         newCards.addAll(cards);
-        return setAllCards(newCards);
+        return newCards;
+    }
+    public List<Card> addCards(Collection<Card> cards) {
+        return setAllCards(addedCards(cards));
     }
 
-    public List<Card> insertCards(int pos, Collection<Card> cards) {
+    List<Card> insertedCards(int pos, Collection<Card> cards) {
         List<Card> newCards = new ArrayList<>(this.cards);
         newCards.addAll(pos, cards);
-        return setAllCards(newCards);
+        return newCards;
+    }
+    public List<Card> insertCards(int pos, Collection<Card> cards) {
+        return setAllCards(insertedCards(pos, cards));
     }
 
+    List<Card> removedCards(int start, int end) {
+        return replacedCards(start, end, Collections.emptyList());
+    }
     public List<Card> removeCards(int start, int end) {
-        return replaceCards(start, end, Collections.emptyList());
+        return setAllCards(removedCards(start, end));
     }
 
     public List<Card> setAllCards(Collection<Card> cards) {
