@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import no.hal.patience.Card;
+import no.hal.patience.MoveCardsOperation;
 import no.hal.patience.Patience;
 import no.hal.patience.Pile;
 import no.hal.patience.SuitKind;
@@ -30,7 +31,7 @@ public class Idiot extends Patience {
 
         for (int i = 0; i < stacks.length; i++) {
             stacks[i] = Pile.empty(SuitsPredicate.alernatingColor().and(FacesPredicate.decreasing()));
-            Pile.moveCard(deck, stacks[i]);
+            MoveCardsOperation.moveCard(deck, stacks[i]);
         }
         putPiles("stacks", Arrays.asList(stacks));
         
@@ -46,7 +47,7 @@ public class Idiot extends Patience {
     }
 
     private void deal() {
-        Pile.moveCardsReversedTurning(getPile("deck"), getPile("deck2"), 3);
+        MoveCardsOperation.moveCardsReversedTurning(getPile("deck"), getPile("deck2"), 3);
     }
 
     @Override

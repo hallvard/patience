@@ -112,7 +112,7 @@ public class PileTest {
     public void testMoveCards() {
         Pile source = new Pile(CardsPredicate.whatever, List.of(s1, h2));
         Pile target = new Pile(CardsPredicate.whatever, List.of(d4));
-        Pile.moveCards(source, target, 2);
+        MoveCardsOperation.moveCards(source, target, 2);
         assertCards(source);
         assertCards(target, d4, s1, h2);
     }
@@ -121,7 +121,7 @@ public class PileTest {
     public void testMoveCardsReversed() {
         Pile source = new Pile(CardsPredicate.whatever, List.of(s1, h2));
         Pile target = new Pile(CardsPredicate.whatever, List.of(d4));
-        Pile.moveCardsReversed(source, target, 2);
+        MoveCardsOperation.moveCardsReversed(source, target, 2);
         assertCards(source);
         assertCards(target, d4, h2, s1);
     }

@@ -115,11 +115,11 @@ public class Pile implements Iterable<Card>, Cards {
         return cards.size();
     }
 
-    private int adjustIndex(int index) {
+    private static int adjustIndex(List<Card> cards, int index) {
         if (index > cards.size()) {
             index = cards.size();
         } else if (index < 0) {
-            index = getCardCount() + index;
+            index = cards.size() + index;
             if (index < 0) {
                 index = 0;
             }
@@ -127,71 +127,110 @@ public class Pile implements Iterable<Card>, Cards {
         return index;
     }
 
-    public List<Card> getCards(int start, int end) {
-        start = adjustIndex(start);
-        end = adjustIndex(end);
+    static List<Card> getCards(List<Card> thisCards, int start, int end) {
+        start = adjustIndex(thisCards, start);
+        end = adjustIndex(thisCards, end);
         List<Card> result = new ArrayList<>();
         for (int i = start; i < end; i++) {
-            result.add(cards.get(i));
+            result.add(thisCards.get(i));
         }
         return result;
     }
+    public List<Card> getCards(int start, int end) {
+        return Pile.getCards(this.cards, start, end);
+    }
 
+    static List<Card> getTopCards(List<Card> thisCards, int count) {
+        return getCards(thisCards, thisCards.size() - count, thisCards.size());
+    }
     public List<Card> getTopCards(int count) {
-        return getCards(getCardCount() - count, getCardCount());
+        return Pile.getTopCards(this.cards, count);
     }
 
-    public List<Card> getBottomCards(int count) {
-        return getCards(0, count);
+    static List<Card> getBottomCards(List<Card> thisCards, int count) {
+        return Pile.getCards(thisCards, 0, count);
     }
-    
+    public List<Card> getBottomCards(int count) {
+        return Pile.getBottomCards(this.cards, count);
+    }
+
     public List<Card> getAllCards() {
         return getCards(0, getCardCount());
     }
 
-    List<Card> replacedCards(int start, int end, Collection<Card> replacementCards) {
-        start = adjustIndex(start);
-        end = adjustIndex(end);
-        List<Card> newCards = new ArrayList<>(cards.size() - (end - start) + replacementCards.size());
+    //
+
+    static List<Card> replacedCards(List<Card> thisCards, int start, int end, Collection<Card> replacementCards) {
+        start = adjustIndex(thisCards, start);
+        end = adjustIndex(thisCards, end);
+        List<Card> newCards = new ArrayList<>(thisCards.size() - (end - start) + replacementCards.size());
         for (int i = 0; i < start; i++) {
-            newCards.add(cards.get(i));
+            newCards.add(thisCards.get(i));
         }
         for (Card replacementCard : replacementCards) {
             newCards.add(replacementCard);
         }
-        for (int i = end; i < cards.size(); i++) {
-            newCards.add(cards.get(i));
+        for (int i = end; i < thisCards.size(); i++) {
+            newCards.add(thisCards.get(i));
         }
         return newCards;
     }
+
+    List<Card> replacedCards(int start, int end, Collection<Card> replacementCards) {
+        return Pile.replacedCards(this.cards, start, end, replacementCards);
+    }
+
     public List<Card> replaceCards(int start, int end, Collection<Card> replacementCards) {
         return setAllCards(replacedCards(start, end, replacementCards));
     }
 
-    List<Card> addedCards(Collection<Card> cards) {
-        List<Card> newCards = new ArrayList<>(this.cards);
+    //
+
+    static List<Card> addedCards(List<Card> thisCards, Collection<Card> cards) {
+        List<Card> newCards = new ArrayList<>(thisCards);
         newCards.addAll(cards);
         return newCards;
     }
+
+    List<Card> addedCards(Collection<Card> cards) {
+        return Pile.addedCards(this.cards, cards);
+    }
+
     public List<Card> addCards(Collection<Card> cards) {
         return setAllCards(addedCards(cards));
     }
 
-    List<Card> insertedCards(int pos, Collection<Card> cards) {
-        List<Card> newCards = new ArrayList<>(this.cards);
+    //
+
+    static List<Card> insertedCards(List<Card> thisCards, int pos, Collection<Card> cards) {
+        List<Card> newCards = new ArrayList<>(thisCards);
         newCards.addAll(pos, cards);
         return newCards;
     }
+
+    List<Card> insertedCards(int pos, Collection<Card> cards) {
+        return Pile.insertedCards(this.cards, pos, cards);
+    }
+
     public List<Card> insertCards(int pos, Collection<Card> cards) {
         return setAllCards(insertedCards(pos, cards));
     }
 
-    List<Card> removedCards(int start, int end) {
-        return replacedCards(start, end, Collections.emptyList());
+    //
+
+    static List<Card> removedCards(List<Card> thisCards, int start, int end) {
+        return replacedCards(thisCards, start, end, Collections.emptyList());
     }
+
+    List<Card> removedCards(int start, int end) {
+        return Pile.removedCards(this.cards, start, end);
+    }
+
     public List<Card> removeCards(int start, int end) {
         return setAllCards(removedCards(start, end));
     }
+
+    //
 
     public List<Card> setAllCards(Collection<Card> cards) {
         return setAllCards(new ArrayList<>(cards));
@@ -205,7 +244,7 @@ public class Pile implements Iterable<Card>, Cards {
         return setAllCards(newCards);
     }
 
-    private List<Card> takeCards(int count, boolean reverse) {
+    List<Card> takeCards(int count, boolean reverse) {
         List<Card> topCards = getTopCards(count);
         removeCards(cards.size() - count, cards.size());
         if (reverse) {
@@ -224,38 +263,6 @@ public class Pile implements Iterable<Card>, Cards {
 
     public Card takeCard() {
         return takeCards(1).get(0);
-    }
-
-    //
-
-    private static void moveCards(Pile source, Pile target, int cardCount, boolean reverse, boolean turn) {
-        List<Card> cards = source.takeCards(cardCount, reverse);
-        if (turn) {
-            for (Card card : cards) {
-                card.turn();
-            }
-        }
-        target.addCards(cards);
-    }
-
-    public static void moveCards(Pile source, Pile target, int cardCount) {
-        moveCards(source, target, cardCount, false, false);
-    }
-
-    public static void moveCard(Pile source, Pile target) {
-        moveCards(source, target, 1);
-    }
-
-    public static void moveCardsReversed(Pile source, Pile target, int cardCount) {
-        moveCards(source, target, cardCount, true, false);
-    }
-
-    public static void moveCardsTurning(Pile source, Pile target, int cardCount) {
-        moveCards(source, target, cardCount, false, true);
-    }
-
-    public static void moveCardsReversedTurning(Pile source, Pile target, int cardCount) {
-        moveCards(source, target, cardCount, true, true);
     }
 
     //
