@@ -51,13 +51,14 @@ public class Idiot extends Patience {
     }
 
     @Override
-    public boolean canDeal() {
-        return false;
+    public void initPilesOperations() {
+        super.initPilesOperations();
+        MoveCardsOperation dealOp = new MoveCardsOperation(3, true, true);
     }
 
     @Override
-    public boolean isFinished() {
-        return false;
+    public boolean updatePilesOperations() {
+        return getPile("deck").getCardCount() > 0;
     }
 
     public static void main(String[] args) {

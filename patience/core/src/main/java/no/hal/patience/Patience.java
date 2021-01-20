@@ -77,7 +77,49 @@ public abstract class Patience implements Iterable<Pile> {
         return getPile(DECK_PILE_NAME);
     }
 
-    public abstract boolean canDeal();
+    private Collection<PilesOperation> pilesOperations = null;
 
-    public abstract boolean isFinished();
+    protected void initPilesOperations() {
+        pilesOperations = new ArrayList<>();
+    }
+
+    public boolean updatePilesOperations() {
+        if (pilesOperations == null) {
+            initPilesOperations();
+        }
+        return true;
+    }
+
+    //
+
+    public PilesOperation matchPilesOperation(PilesOperation po, Pile source, int cardCount, Pile target) {
+        if (po instanceof MoveCardsOperation mco && (mco.getCount() < 0 || mco.getCount() == cardCount)) {
+            MoveCardsOperation mco2 = mco.withCount(cardCount);
+            if (mco2.canApply(source, target)) {
+                return mco2;
+            }
+        }
+        return null;
+    }
+
+    public PilesOperation findMoveCardsOperation(Pile source, int cardCount, Pile target) {
+        for (var po : pilesOperations) {
+            PilesOperation po2 = matchPilesOperation(po, source, cardCount, target);
+            if (po2 != null) {
+                return po;
+            }
+        }
+        return null;
+    }
+
+	public boolean canMoveCards(Pile source, int cardCount, Pile target) {
+		return findMoveCardsOperation(source, cardCount, target) != null;
+	}
+
+	public void moveCards(Pile source, int cardCount, Pile target) {
+        PilesOperation po = findMoveCardsOperation(source, cardCount, target);
+        if (po != null) {
+            po.apply(source, target);
+        }
+	}
 }

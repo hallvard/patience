@@ -8,7 +8,7 @@ import no.hal.patience.Card;
 @FunctionalInterface
 public interface CardsPredicate extends Predicate<List<Card>> {
 
-    default public boolean test(Card card1, Card card2) {
+    default boolean test(Card card1, Card card2) {
         return test(List.of(card1, card2));
     }
 
@@ -16,15 +16,15 @@ public interface CardsPredicate extends Predicate<List<Card>> {
         return cards -> pred.test(cards);
     }
 
-    default public CardsPredicate and(CardsPredicate other) {
+    default CardsPredicate and(CardsPredicate other) {
         return cards -> test(cards) && other.test(cards);
     }
 
-    default public CardsPredicate or(CardsPredicate other) {
+    default CardsPredicate or(CardsPredicate other) {
         return cards -> test(cards) || other.test(cards);
     }
 
-    default public CardsPredicate negate() {
+    default CardsPredicate negate() {
         return cards -> ! test(cards);
     }
 

@@ -115,6 +115,10 @@ public class Pile implements Iterable<Card>, Cards {
         return cards.size();
     }
 
+    public boolean isEmpty() {
+        return getCardCount() == 0;
+    }
+
     private static int adjustIndex(List<Card> cards, int index) {
         if (index > cards.size()) {
             index = cards.size();
@@ -147,11 +151,25 @@ public class Pile implements Iterable<Card>, Cards {
         return Pile.getTopCards(this.cards, count);
     }
 
+    static Card getTopCard(List<Card> thisCards) {
+        return thisCards.get(thisCards.size() - 1);
+    }
+    public Card getTopCard() {
+        return Pile.getTopCard(this.cards);
+    }
+
     static List<Card> getBottomCards(List<Card> thisCards, int count) {
         return Pile.getCards(thisCards, 0, count);
     }
     public List<Card> getBottomCards(int count) {
         return Pile.getBottomCards(this.cards, count);
+    }
+
+    static Card getBottomCard(List<Card> thisCards) {
+        return thisCards.get(0);
+    }
+    public Card getBottomCard() {
+        return Pile.getBottomCard(this.cards);
     }
 
     public List<Card> getAllCards() {
@@ -264,13 +282,4 @@ public class Pile implements Iterable<Card>, Cards {
     public Card takeCard() {
         return takeCards(1).get(0);
     }
-
-    //
-
-	public static boolean canMoveTopCards(Pile source, int cardCount, Pile target) {
-		return false;
-	}
-
-	public static void moveTopCards(Pile source, int cardCount, Pile target) {
-	}
 }

@@ -48,14 +48,9 @@ public class CardsExampleController extends PatienceController<CardsExampleContr
         }
 
         @Override
-        public boolean canDeal() {
+        public boolean updatePilesOperations() {
             return false;
         }
-
-        @Override
-        public boolean isFinished() {
-            return false;
-        }        
     }
 
     @Override
