@@ -53,6 +53,20 @@ public abstract class Patience implements Iterable<Pile> {
         return piles.get(name);
     }
 
+    public String getPileCategoryOrName(Pile pile) {
+        for (String category : piless.keySet()) {
+            if (piless.get(category).contains(pile)) {
+                return category;
+            }
+        }
+        for (String name : piles.keySet()) {
+            if (piles.get(name) == pile) {
+                return name;
+            }
+        }
+        return null;
+    }
+
     @Override
     public Iterator<Pile> iterator() {
         var allPiles = new ArrayList<Pile>();
@@ -77,49 +91,29 @@ public abstract class Patience implements Iterable<Pile> {
         return getPile(DECK_PILE_NAME);
     }
 
-    private Collection<PilesOperation> pilesOperations = null;
+    //
 
-    protected void initPilesOperations() {
-        pilesOperations = new ArrayList<>();
+    private Collection<PilesOperationRule> pilesOperationRules = null;
+
+    protected void initPilesOperationRules() {
+        pilesOperationRules = new ArrayList<>();
     }
 
     public boolean updatePilesOperations() {
-        if (pilesOperations == null) {
-            initPilesOperations();
+        if (pilesOperationRules == null) {
+            initPilesOperationRules();
         }
         return true;
     }
 
     //
 
-    public PilesOperation matchPilesOperation(PilesOperation po, Pile source, int cardCount, Pile target) {
-        if (po instanceof MoveCardsOperation mco && (mco.getCount() < 0 || mco.getCount() == cardCount)) {
-            MoveCardsOperation mco2 = mco.withCount(cardCount);
-            if (mco2.canApply(source, target)) {
-                return mco2;
-            }
-        }
-        return null;
-    }
-
-    public PilesOperation findMoveCardsOperation(Pile source, int cardCount, Pile target) {
-        for (var po : pilesOperations) {
-            PilesOperation po2 = matchPilesOperation(po, source, cardCount, target);
-            if (po2 != null) {
-                return po;
-            }
-        }
-        return null;
-    }
-
 	public boolean canMoveCards(Pile source, int cardCount, Pile target) {
-		return findMoveCardsOperation(source, cardCount, target) != null;
+        // TODO
+		return true;
 	}
 
 	public void moveCards(Pile source, int cardCount, Pile target) {
-        PilesOperation po = findMoveCardsOperation(source, cardCount, target);
-        if (po != null) {
-            po.apply(source, target);
-        }
+        // TODO
 	}
 }

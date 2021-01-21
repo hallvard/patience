@@ -5,6 +5,7 @@ import java.util.List;
 
 import no.hal.patience.Card;
 import no.hal.patience.MoveCardsOperation;
+import no.hal.patience.MoveCardsOperationRule;
 import no.hal.patience.Patience;
 import no.hal.patience.Pile;
 import no.hal.patience.SuitKind;
@@ -51,9 +52,9 @@ public class Idiot extends Patience {
     }
 
     @Override
-    public void initPilesOperations() {
-        super.initPilesOperations();
-        MoveCardsOperation dealOp = new MoveCardsOperation(3, true, true);
+    public void initPilesOperationRules() {
+        super.initPilesOperationRules();
+        MoveCardsOperationRule dealOp = new MoveCardsOperationRule("deck", "deck2", 3, true, true);
     }
 
     @Override
