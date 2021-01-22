@@ -14,7 +14,7 @@ import no.hal.patience.fx.util.FxUtil;
 import no.hal.patience.fx.util.NodeAlignment;
 import no.hal.patience.Patience;
 
-public abstract class PatienceController<T extends Patience> {
+public abstract class PatienceController<T extends Patience<P>, P extends Enum<P>> {
 
 	protected T patience;
 
@@ -35,7 +35,7 @@ public abstract class PatienceController<T extends Patience> {
         return FxUtil.createPileViews(piles);
     }
 
-    protected Collection<PileView>  createPileViews(String category) {
+    protected Collection<PileView>  createPileViews(Enum<P> category) {
         return createPileViews(getPatience().getPiles(category));
     }
 
@@ -78,9 +78,9 @@ public abstract class PatienceController<T extends Patience> {
 	}
     */
 
-	public static Pile findNamedTarget(final Patience patience, final Pile source, final int cardCount, final Iterator<? extends Object> keys) {
+	public static <P extends Enum<P>> Pile findNamedTarget(final Patience<P> patience, final Class<P> enumClass, Pile source, final int cardCount, final Iterator<? extends Object> keys) {
         while (keys.hasNext()) {
-            var pile = findTarget(patience, source, cardCount, patience.getPiles(String.valueOf(keys.next())).iterator());
+            var pile = findTarget(patience, source, cardCount, patience.getPiles(Enum.valueOf(enumClass, String.valueOf(keys.next()))).iterator());
             if (pile != null) {
                 return pile;
             }

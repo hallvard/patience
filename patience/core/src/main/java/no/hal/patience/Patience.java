@@ -1,16 +1,17 @@
 package no.hal.patience;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public abstract class Patience implements Iterable<Pile> {
+public abstract class Patience<P extends Enum<P>> implements Iterable<Pile> {
     
-    private Map<String, Collection<Pile>> piless = new HashMap<>();
-    private Map<String, Pile> piles = new HashMap<>();
+    private Map<Enum<P>, Collection<Pile>> piless = new HashMap<>();
+    private Map<Enum<P>, Pile> piles = new HashMap<>();
 
     @Override
     public String toString() {
@@ -29,37 +30,37 @@ public abstract class Patience implements Iterable<Pile> {
         return builder.toString();
     }
 
-    protected void putPiles(String category, Collection<Pile> piles) {
+    protected void putPiles(Enum<P> category, Collection<Pile> piles) {
         this.piless.put(category, piles);
     }
 
-    protected void putPile(String name, Pile pile) {
+    protected void putPile(Enum<P> name, Pile pile) {
         this.piles.put(name, pile);
     }
 
     public abstract void initPiles();
 
-    public Collection<Pile> getPiles(String category) {
+    public Collection<Pile> getPiles(Enum<P> category) {
         if (! piless.containsKey(category)) {
             throw new IllegalArgumentException("The pile category must be one of " + piless.keySet());
         }
         return piless.get(category);
     }
 
-    public Pile getPile(String name) {
+    public Pile getPile(Enum<P> name) {
         if (! piles.containsKey(name)) {
             throw new IllegalArgumentException("The pile name must be one of " + piles.keySet());
         }
         return piles.get(name);
     }
 
-    public String getPileCategoryOrName(Pile pile) {
-        for (String category : piless.keySet()) {
+    public Enum<P> getPileKind(Pile pile) {
+        for (Enum<P> category : piless.keySet()) {
             if (piless.get(category).contains(pile)) {
                 return category;
             }
         }
-        for (String name : piles.keySet()) {
+        for (Enum<P> name : piles.keySet()) {
             if (piles.get(name) == pile) {
                 return name;
             }
@@ -77,23 +78,25 @@ public abstract class Patience implements Iterable<Pile> {
         return allPiles.iterator();
     }
 
-    public Collection<String> getPileCategories() {
+    public Collection<Enum<P>> getPileCategories() {
         return Collections.unmodifiableCollection(piless.keySet());
     }
 
-    public Collection<String> getPileNames() {
+    public Collection<Enum<P>> getPileNames() {
         return Collections.unmodifiableCollection(piles.keySet());
     }
 
-    public final static String DECK_PILE_NAME = "deck";
-
     public Pile getDeck() {
-        return getPile(DECK_PILE_NAME);
+        return null;
     }
 
     //
 
     private Collection<PilesOperationRule> pilesOperationRules = null;
+
+    protected void addPilesOperationRules(PilesOperationRule... rules) {
+        pilesOperationRules.addAll(Arrays.asList(rules));
+    }
 
     protected void initPilesOperationRules() {
         pilesOperationRules = new ArrayList<>();

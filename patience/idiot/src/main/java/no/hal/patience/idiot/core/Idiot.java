@@ -13,11 +13,15 @@ import no.hal.patience.util.CardsPredicate;
 import no.hal.patience.util.FacesPredicate;
 import no.hal.patience.util.SuitsPredicate;
 
-public class Idiot extends Patience {
+public class Idiot extends Patience<Idiot.PileKinds> {
     
     private final Pile[] stacks = new Pile[SuitKind.values().length];
     private Pile extras;
     private final Pile[] suits = new Pile[SuitKind.values().length];
+
+    public enum PileKinds {
+        suits, stacks, extras, deck, deck2;
+    }
 
     @Override
     public void initPiles() {
@@ -28,38 +32,42 @@ public class Idiot extends Patience {
             suits[suit.ordinal()] = Pile.empty(constraint);
         }
         suits[0].addCards(suitStartCard);
-        putPiles("suits", Arrays.asList(suits));
+        putPiles(PileKinds.suits, Arrays.asList(suits));
 
         for (int i = 0; i < stacks.length; i++) {
             stacks[i] = Pile.empty(SuitsPredicate.alernatingColor().and(FacesPredicate.decreasing()));
             MoveCardsOperation.moveCard(deck, stacks[i]);
         }
-        putPiles("stacks", Arrays.asList(stacks));
+        putPiles(PileKinds.stacks, Arrays.asList(stacks));
         
         List<Card> extraCards = deck.takeCards(12);
         extras = Pile.of(extraCards);
-        putPile("extras", extras);
+        putPile(PileKinds.extras, extras);
         
         deck.getAllCards().stream().forEach(Card::turn);
-        putPile(Patience.DECK_PILE_NAME, deck);
-        putPile("deck2", Pile.empty());
+        putPile(PileKinds.deck, deck);
+        putPile(PileKinds.deck2, Pile.empty());
 
-        deal();
-    }
-
-    private void deal() {
-        MoveCardsOperation.moveCardsReversedTurning(getPile("deck"), getPile("deck2"), 3);
+        MoveCardsOperation.moveCardsReversedTurning(getPile(PileKinds.deck), getPile(PileKinds.deck2), 3);
     }
 
     @Override
     public void initPilesOperationRules() {
         super.initPilesOperationRules();
-        MoveCardsOperationRule dealOp = new MoveCardsOperationRule("deck", "deck2", 3, true, true);
+        addPilesOperationRules(
+            new MoveCardsOperationRule<PileKinds>(PileKinds.deck, PileKinds.deck2, 3, true, true),
+            new MoveCardsOperationRule<PileKinds>(PileKinds.extras, PileKinds.stacks),
+            new MoveCardsOperationRule<PileKinds>(PileKinds.extras, PileKinds.suits),
+            new MoveCardsOperationRule<PileKinds>(PileKinds.deck2, PileKinds.stacks, 1),
+            new MoveCardsOperationRule<PileKinds>(PileKinds.deck2, PileKinds.suits, 1),
+            new MoveCardsOperationRule<PileKinds>(PileKinds.stacks, PileKinds.stacks),
+            new MoveCardsOperationRule<PileKinds>(PileKinds.stacks, PileKinds.suits, 1)
+        );
     }
 
     @Override
     public boolean updatePilesOperations() {
-        return getPile("deck").getCardCount() > 0;
+        return getPile(PileKinds.deck).getCardCount() > 0;
     }
 
     public static void main(String[] args) {

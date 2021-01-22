@@ -5,13 +5,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import javafx.fxml.FXML;
-import no.hal.patience.Patience;
 import no.hal.patience.fx.PatienceController;
 import no.hal.patience.fx.PileView;
 import no.hal.patience.fx.PilesView;
 import no.hal.patience.idiot.core.Idiot;
 
-public class IdiotController extends PatienceController<Idiot> {
+public class IdiotController extends PatienceController<Idiot, Idiot.PileKinds> {
 
     @Override
     protected Idiot createPatience() {
@@ -40,11 +39,11 @@ public class IdiotController extends PatienceController<Idiot> {
 
         System.out.println(patience);
 
-        suits.getPiles().addAll(createPileViews("suits"));
-        stacks.getPiles().addAll(createPileViews("stacks"));
-        extras.setPile(getPatience().getPile("extras"));
-        deck.setPile(getPatience().getPile(Patience.DECK_PILE_NAME));
-        deck2.setPile(getPatience().getPile("deck2"));
+        suits.getPiles().addAll(createPileViews(Idiot.PileKinds.suits));
+        stacks.getPiles().addAll(createPileViews(Idiot.PileKinds.stacks));
+        extras.setPile(getPatience().getPile(Idiot.PileKinds.extras));
+        deck.setPile(getPatience().getPile(Idiot.PileKinds.deck));
+        deck2.setPile(getPatience().getPile(Idiot.PileKinds.deck2));
 
         sourcePiles = new ArrayList<>();
         sourcePiles.add(deck);

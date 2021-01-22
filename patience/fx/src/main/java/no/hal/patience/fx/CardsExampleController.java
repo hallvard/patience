@@ -10,12 +10,17 @@ import no.hal.patience.Card;
 import no.hal.patience.Patience;
 import no.hal.patience.Pile;
 import no.hal.patience.SuitKind;
+import no.hal.patience.fx.CardsExampleController.ExamplesPatience.ExamplePiles;
 import no.hal.patience.fx.util.FxUtil;
 import no.hal.patience.util.SuitsPredicate;
 
-public class CardsExampleController extends PatienceController<CardsExampleController.ExamplesPatience> {
+public class CardsExampleController extends PatienceController<CardsExampleController.ExamplesPatience, CardsExampleController.ExamplesPatience.ExamplePiles> {
 
-    static class ExamplesPatience extends Patience {
+    static class ExamplesPatience extends Patience<ExamplesPatience.ExamplePiles> {
+
+        enum ExamplePiles {
+            sources, targets;
+        }
 
         private List<Pile> sourcePiles;
         private List<Pile> targetPiles;
@@ -27,7 +32,7 @@ public class CardsExampleController extends PatienceController<CardsExampleContr
                 sourcePiles.add(Pile.empty(SuitsPredicate.sameAs(suit)));
             }
             System.out.println(sourcePiles);
-            putPiles("sources", sourcePiles);
+            putPiles(ExamplePiles.sources, sourcePiles);
     
             Pile deck = Pile.deck();
             List<Card> cards = deck.getAllCards();
@@ -44,7 +49,7 @@ public class CardsExampleController extends PatienceController<CardsExampleContr
                 targetPiles.add(Pile.of(allCards.get(i)));
             }
             System.out.println(targetPiles);
-            putPiles("targets", targetPiles);
+            putPiles(ExamplePiles.targets, targetPiles);
         }
 
         @Override
@@ -68,8 +73,8 @@ public class CardsExampleController extends PatienceController<CardsExampleContr
 
 	protected void initialize() {
         super.initialize();
-        sources.getPiles().addAll(FxUtil.createPileViews(patience, "sources"));
-        targets.getPiles().addAll(FxUtil.createPileViews(patience, "targets"));
+        sources.getPiles().addAll(FxUtil.createPileViews(patience, ExamplePiles.sources));
+        targets.getPiles().addAll(FxUtil.createPileViews(patience, ExamplePiles.targets));
     }
 
     @Override

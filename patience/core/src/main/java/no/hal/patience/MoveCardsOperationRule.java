@@ -5,21 +5,27 @@ import java.util.List;
 
 import no.hal.patience.util.CardsPredicate;
 
-public class MoveCardsOperationRule implements PilesOperationRule {
+public class MoveCardsOperationRule<P extends Enum<P>> implements PilesOperationRule<P> {
 
-    private String sourceCategoryOrName;
-    private String targetCategoryOrName;
+    private Enum<P> sourcePileKind;
+    private Enum<P> targetPileKind;
     private final int count;
 
     private final boolean reversed;
     private final boolean turning;
 
-    public MoveCardsOperationRule(String sourceCategoryOrName, String targetCategoryOrName, int count, boolean reversed, boolean turning) {
-        this.sourceCategoryOrName = sourceCategoryOrName;
-        this.targetCategoryOrName = targetCategoryOrName;
+    public MoveCardsOperationRule(Enum<P> sourcePileKind, Enum<P> targetPileKind, int count, boolean reversed, boolean turning) {
+        this.sourcePileKind = sourcePileKind;
+        this.targetPileKind = targetPileKind;
         this.count = count;
         this.reversed = reversed;
         this.turning = turning;
+    }
+    public MoveCardsOperationRule(Enum<P> sourcePileKind, Enum<P> targetPileKind, int count) {
+        this(sourcePileKind, targetPileKind, count, false, false);
+    }
+    public MoveCardsOperationRule(Enum<P> sourcePileKind, Enum<P> targetPileKind) {
+        this(sourcePileKind, targetPileKind, -1);
     }
 
     public int getCount() {
@@ -98,13 +104,13 @@ public class MoveCardsOperationRule implements PilesOperationRule {
     //
 
     @Override
-    public MoveCardsOperation accept(Pile source, int sourcePos) {
+    public MoveCardsOperation accept(Patience<P> patience, Pile source, int sourcePos) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public MoveCardsOperation accept(Pile source, int sourcePos, Pile target, int targetPos) {
+    public MoveCardsOperation accept(Patience<P> patience, Pile source, int sourcePos, Pile target, int targetPos) {
         // TODO Auto-generated method stub
         return null;
     }

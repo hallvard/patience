@@ -13,11 +13,11 @@ import no.hal.patience.fx.PileView;
 
 public class FxUtil {
 
-    public static List<Pile> getAllPiles(Patience patience, String... categoriesOrNames) {
+    public static <P extends Enum<P>> List<Pile> getAllPiles(Patience<P> patience, Enum<P>... categoriesOrNames) {
         List<Pile> allPiles = new ArrayList<>();
-        Collection<String> categories = patience.getPileCategories();
-        Collection<String> names = patience.getPileNames();
-        for (String categoryOrName : categoriesOrNames) {
+        Collection<Enum<P>> categories = patience.getPileCategories();
+        Collection<Enum<P>> names = patience.getPileNames();
+        for (Enum<P> categoryOrName : categoriesOrNames) {
             if (categories.contains(categoryOrName)) {
                 allPiles.addAll(patience.getPiles(categoryOrName));
             } else if (names.contains(categoryOrName)) {
@@ -31,7 +31,7 @@ public class FxUtil {
         return piles.stream().map(PileView::new).collect(Collectors.toList());
     }
 
-    public static Collection<PileView> createPileViews(Patience patience, String pileCategory) {
+    public static <P extends Enum<P>> Collection<PileView> createPileViews(Patience<P> patience, Enum<P> pileCategory) {
         return createPileViews(patience.getPiles(pileCategory));
     }
 
