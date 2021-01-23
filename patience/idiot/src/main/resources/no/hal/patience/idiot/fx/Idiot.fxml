@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.geometry.Dimension2D?>
 
-<VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="no.hal.patience.idiot.fx.IdiotController">
+<VBox fx:id="pilesParent" xmlns:fx="http://javafx.com/fxml/1" fx:controller="no.hal.patience.idiot.fx.IdiotController">
     <PilesView fx:id="suits" pileSpacing="20">
         <pilesFaceUpOffset>
             <Dimension2D width="1" height="0"/>

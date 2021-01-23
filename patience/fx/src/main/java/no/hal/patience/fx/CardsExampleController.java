@@ -72,9 +72,10 @@ public class CardsExampleController extends PatienceController<CardsExampleContr
     private PilesView targets;
 
 	protected void initialize() {
-        super.initialize();
         sources.getPiles().addAll(FxUtil.createPileViews(patience, ExamplePiles.sources));
         targets.getPiles().addAll(FxUtil.createPileViews(patience, ExamplePiles.targets));
+    
+        super.initialize(sources.getParent());
     }
 
     @Override

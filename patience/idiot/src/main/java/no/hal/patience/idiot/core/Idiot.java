@@ -54,7 +54,7 @@ public class Idiot extends Patience<Idiot.PileKinds> {
     @Override
     public void initPilesOperationRules() {
         super.initPilesOperationRules();
-        addPilesOperationRules(
+        addPilesOperationRules(List.of(
             new MoveCardsOperationRule<PileKinds>(PileKinds.deck, PileKinds.deck2, 3, true, true),
             new MoveCardsOperationRule<PileKinds>(PileKinds.extras, PileKinds.stacks),
             new MoveCardsOperationRule<PileKinds>(PileKinds.extras, PileKinds.suits),
@@ -62,7 +62,7 @@ public class Idiot extends Patience<Idiot.PileKinds> {
             new MoveCardsOperationRule<PileKinds>(PileKinds.deck2, PileKinds.suits, 1),
             new MoveCardsOperationRule<PileKinds>(PileKinds.stacks, PileKinds.stacks),
             new MoveCardsOperationRule<PileKinds>(PileKinds.stacks, PileKinds.suits, 1)
-        );
+        ));
     }
 
     @Override

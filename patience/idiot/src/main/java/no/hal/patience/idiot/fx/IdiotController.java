@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
 import no.hal.patience.fx.PatienceController;
 import no.hal.patience.fx.PileView;
 import no.hal.patience.fx.PilesView;
@@ -20,6 +21,9 @@ public class IdiotController extends PatienceController<Idiot, Idiot.PileKinds> 
     //
     
     @FXML
+    private Parent pilesParent;
+
+    @FXML
     private PilesView suits;
     
     @FXML
@@ -34,6 +38,7 @@ public class IdiotController extends PatienceController<Idiot, Idiot.PileKinds> 
     @FXML
     private PileView deck2;
 
+    @FXML
 	protected void initialize() {
         super.initialize();
 
@@ -55,6 +60,8 @@ public class IdiotController extends PatienceController<Idiot, Idiot.PileKinds> 
         targetPiles.add(deck2);
         targetPiles.addAll(stacks.getPiles());
         targetPiles.addAll(suits.getPiles());
+
+        registerMouseListeners(pilesParent);
     }
 
     private List<PileView> sourcePiles;

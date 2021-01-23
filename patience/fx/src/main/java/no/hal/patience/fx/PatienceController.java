@@ -6,6 +6,7 @@ import java.util.Iterator;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.NonInvertibleTransformException;
 
@@ -24,12 +25,25 @@ public abstract class PatienceController<T extends Patience<P>, P extends Enum<P
 		return patience;
 	}
 
-	@FXML
-	protected void initialize() {
+	protected void initialize(Parent pilesParent) {
         patience = createPatience();
         patience.initPiles();
         patience.updatePilesOperations();
-	}
+
+        if (pilesParent != null) {
+            registerMouseListeners(pilesParent);
+        }
+    }
+
+    protected void initialize() {
+        initialize(null);
+    }
+
+    protected void registerMouseListeners(Parent pilesParent) {
+        pilesParent.setOnMousePressed(event -> mousePressed(event));
+        pilesParent.setOnMouseDragged(event -> mouseDragged(event));
+        pilesParent.setOnMouseReleased(event -> mouseReleased(event));
+    }
 
     protected Collection<PileView> createPileViews(Collection<Pile> piles) {
         return FxUtil.createPileViews(piles);
@@ -54,7 +68,7 @@ public abstract class PatienceController<T extends Patience<P>, P extends Enum<P
 
 	//
 
-	public static Pile findTarget(final Patience patience, final Pile source, final int cardCount, final Iterator<? extends Pile> piles) {
+	public static Pile findTarget(final Patience<?> patience, final Pile source, final int cardCount, final Iterator<? extends Pile> piles) {
 		while (piles.hasNext()) {
 			final Pile pile = piles.next();
 			if (patience.canMoveCards(source, cardCount, pile)) {
@@ -121,9 +135,10 @@ public abstract class PatienceController<T extends Patience<P>, P extends Enum<P
 	private PileView dragging = null;
 
 	@FXML
-	void mousePressed(final MouseEvent e) {
+	protected void mousePressed(final MouseEvent e) {
 		final Point2D scenePoint = getScenePoint(e);
-		dragging = getPile(scenePoint, getSourcePiles(), null);
+        dragging = getPile(scenePoint, getSourcePiles(), null);
+        System.out.println("mousePressed.dragging=" + dragging);
 		if (dragging != null) {
 			e.consume();
 			dragging.startDragging(scenePoint, null, -1);
@@ -136,20 +151,22 @@ public abstract class PatienceController<T extends Patience<P>, P extends Enum<P
 	}
 
 	protected boolean canDrag(final Pile pile) {
-		return pile != getPatience().getDeck();
+		return true; // getPatience().canMoveCards(pile, pile.getCardCount() - 1, null);
 	}
 
 	private boolean isDragging() {
 		return dragging != null;
 	}
 
-	public void mouseDragged(final MouseEvent e) {
+	@FXML
+	protected void mouseDragged(final MouseEvent e) {
 		if (isDragging()) {
 			e.consume();
 			if (canDrag(dragging.getPile())) {
 				final Point2D scenePoint = getScenePoint(e);
 				dragging.drag(scenePoint);
 				final PileView dropping = getPile(scenePoint, getTargetPiles(), dragging);
+                System.out.println("mouseDragged.dropping=" + dropping);
 				if (dropping != null) {
 					updateDragStatus(dragging.getPile(), dragging.getDragPos(), dropping.getPile());
 				}
@@ -157,7 +174,8 @@ public abstract class PatienceController<T extends Patience<P>, P extends Enum<P
 		}
 	}
 
-	public void mouseReleased(final MouseEvent e) {
+	@FXML
+	protected void mouseReleased(final MouseEvent e) {
 		final Point2D scenePoint = getScenePoint(e);
 		e.consume();
 		final PileView dropping = getPile(scenePoint, getTargetPiles(), dragging);

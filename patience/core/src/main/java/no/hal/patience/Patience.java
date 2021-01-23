@@ -1,12 +1,12 @@
 package no.hal.patience;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.function.Function;
 
 public abstract class Patience<P extends Enum<P>> implements Iterable<Pile> {
     
@@ -92,10 +92,10 @@ public abstract class Patience<P extends Enum<P>> implements Iterable<Pile> {
 
     //
 
-    private Collection<PilesOperationRule> pilesOperationRules = null;
+    private Collection<PilesOperationRule<P>> pilesOperationRules = null;
 
-    protected void addPilesOperationRules(PilesOperationRule... rules) {
-        pilesOperationRules.addAll(Arrays.asList(rules));
+    protected void addPilesOperationRules(Collection<PilesOperationRule<P>> rules) {
+        pilesOperationRules.addAll(rules);
     }
 
     protected void initPilesOperationRules() {
@@ -111,12 +111,32 @@ public abstract class Patience<P extends Enum<P>> implements Iterable<Pile> {
 
     //
 
+    protected MoveCardsOperation findMoveCardsOperation(Function<PilesOperationRule<P>, MoveCardsOperation> fun) {
+        for (var rule : pilesOperationRules) {
+            MoveCardsOperation op = fun.apply(rule);
+            if (op != null) {
+                return op;
+            }
+        }
+        return null;
+    }
+
+    protected MoveCardsOperation findMoveCardsOperation(Pile source, int cardCount) {
+        return findMoveCardsOperation(rule -> rule.accept(this, source, source.getCardCount() - cardCount));
+    }
+
+    protected MoveCardsOperation findMoveCardsOperation(Pile source, int cardCount, Pile target) {
+        return findMoveCardsOperation(rule -> rule.accept(this, source, source.getCardCount() - cardCount, target, target.getCardCount()));
+    }
+
 	public boolean canMoveCards(Pile source, int cardCount, Pile target) {
-        // TODO
-		return true;
+		return findMoveCardsOperation(source, cardCount, target) != null;
 	}
 
 	public void moveCards(Pile source, int cardCount, Pile target) {
-        // TODO
+        MoveCardsOperation op = findMoveCardsOperation(source, cardCount, target);
+        if (op != null && op.canApply()) {
+            op.apply();
+        }
 	}
 }
