@@ -31,7 +31,7 @@ public class SizePredicate implements CardsPredicate {
         if (min >= 0 && size < min) {
             return false;
         }
-        if (max >= 0 && size < max) {
+        if (max >= 0 && size > max) {
             return false;
         }
         return true;
@@ -44,19 +44,35 @@ public class SizePredicate implements CardsPredicate {
 
     //
 
-    public static SizePredicate sizeBetween(int min, int max) {
+    public static SizePredicate between(int min, int max) {
         return new SizePredicate(min, max);
     }
 
-    public static SizePredicate sizeIs(int size) {
+    public static SizePredicate nonEmpty() {
+        return new SizePredicate(1, -1);
+    }
+
+    public static SizePredicate empty() {
+        return new SizePredicate(-1, 0);
+    }
+
+    public static SizePredicate atLeast(int min) {
+        return new SizePredicate(min, -1);
+    }
+
+    public static SizePredicate atMost(int max) {
+        return new SizePredicate(-1, max);
+    }
+
+    public static SizePredicate is(int size) {
         return new SizePredicate(size);
     }
 
-    public static SizePredicate sizeIs1() {
-        return sizeIs(1);
+    public static SizePredicate is1() {
+        return is(1);
     }
 
-    public static SizePredicate sizeIs13() {
-        return sizeIs(13);
+    public static SizePredicate is13() {
+        return is(13);
     }
 }

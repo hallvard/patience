@@ -38,6 +38,11 @@ public class PileView extends Region implements CardsListener<Pile> {
         setPile(pile);
 	}
 
+    @Override
+    public String toString() {
+        return super.toString() + " for " + pile;
+    }
+
 	public Pile getPile() {
 		return pile;
 	}
@@ -157,23 +162,26 @@ public class PileView extends Region implements CardsListener<Pile> {
 
 	protected void updateLayout() {
 		double x = 0.0, y = 0.0;
+		double tx = 0.0, ty = 0.0;
 		double width = 0.0, height = 0.0;
 		int cardNum = 0, cardCount = 0;
 		for (final CardView cardNode : cards) {
 			if (cardNode == dragging) {
-				x += draggingOffset.getWidth();
-				y += draggingOffset.getHeight();
+				tx += draggingOffset.getWidth();
+                ty += draggingOffset.getHeight();
 				cardCount++;
 			}
 			if (dragCardCount >= 0 && cardCount > dragCardCount) {
 				cardCount = 0;
-				x -= draggingOffset.getWidth();
-				y -= draggingOffset.getHeight();
+				tx -= draggingOffset.getWidth();
+				ty -= draggingOffset.getHeight();
 			} else if (cardCount > 0) {
 				cardCount++;
 			}
 			cardNode.setLayoutX(x);
 			cardNode.setLayoutY(y);
+            cardNode.setTranslateX(tx);
+            cardNode.setTranslateY(ty);
 			final Dimension2D offset = getCardOffset(cardNode, cardNum, cards.size());
 			x += offset.getWidth();
 			y += offset.getHeight();
@@ -223,7 +231,19 @@ public class PileView extends Region implements CardsListener<Pile> {
 			draggingOffset = new Dimension2D(point.getX() - draggingStart.getX(), point.getY() - draggingStart.getY());
 			updateLayout();
 		}
-	}
+    }
+    
+    public boolean isDragging() {
+        return draggingOffset != null;
+    }
+
+    public boolean hasDragged(double distance) {
+        if (draggingOffset == null) {
+            return false;
+        }
+        double dx = draggingOffset.getWidth(), dy = draggingOffset.getHeight();
+        return Math.sqrt(dx * dx + dy * dy) > distance;
+    }
 
 	public int getDragPos() {
 		return cards.size() - dragCardCount;

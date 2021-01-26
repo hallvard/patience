@@ -33,4 +33,8 @@ public interface CardOrder extends Function<CardKind, Integer> {
     public static CardOrder aceIs14() {
         return aceIs(14);
     }
+
+    public static CardOrder startsAt(int startFace) {
+        return of(cardKind -> (cardKind.getFace() + 13 - startFace) % 13 + 1);
+    }
 }

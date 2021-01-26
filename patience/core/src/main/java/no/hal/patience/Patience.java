@@ -40,16 +40,24 @@ public abstract class Patience<P extends Enum<P>> implements Iterable<Pile> {
 
     public abstract void initPiles();
 
+    public boolean hasPiles(Enum<P> category) {
+        return piless.containsKey(category);
+    }
+
     public Collection<Pile> getPiles(Enum<P> category) {
         if (! piless.containsKey(category)) {
-            throw new IllegalArgumentException("The pile category must be one of " + piless.keySet());
+            throw new IllegalArgumentException("The pile category must be one of " + piless.keySet() + ", but was " + category);
         }
         return piless.get(category);
     }
 
+    public boolean hasPile(Enum<P> name) {
+        return piles.containsKey(name);
+    }
+
     public Pile getPile(Enum<P> name) {
         if (! piles.containsKey(name)) {
-            throw new IllegalArgumentException("The pile name must be one of " + piles.keySet());
+            throw new IllegalArgumentException("The pile name must be one of " + piles.keySet() + ", but was " + name);
         }
         return piles.get(name);
     }
@@ -122,14 +130,19 @@ public abstract class Patience<P extends Enum<P>> implements Iterable<Pile> {
     }
 
     protected MoveCardsOperation findMoveCardsOperation(Pile source, int cardCount) {
-        return findMoveCardsOperation(rule -> rule.accept(this, source, source.getCardCount() - cardCount));
+        return findMoveCardsOperation(rule -> rule.accept(this, source, cardCount));
     }
 
     protected MoveCardsOperation findMoveCardsOperation(Pile source, int cardCount, Pile target) {
-        return findMoveCardsOperation(rule -> rule.accept(this, source, source.getCardCount() - cardCount, target, target.getCardCount()));
+        return findMoveCardsOperation(rule -> rule.accept(this, source, cardCount, target, target.getCardCount()));
     }
+    
+    public Pile getDefaultTarget(Pile source, int cardCount) {
+        MoveCardsOperation op = findMoveCardsOperation(source, cardCount);
+		return (op != null ? op.getTarget() : null);
+	}
 
-	public boolean canMoveCards(Pile source, int cardCount, Pile target) {
+    public boolean canMoveCards(Pile source, int cardCount, Pile target) {
 		return findMoveCardsOperation(source, cardCount, target) != null;
 	}
 
@@ -138,5 +151,5 @@ public abstract class Patience<P extends Enum<P>> implements Iterable<Pile> {
         if (op != null && op.canApply()) {
             op.apply();
         }
-	}
+    }
 }

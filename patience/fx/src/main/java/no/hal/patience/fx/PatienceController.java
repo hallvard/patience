@@ -40,9 +40,9 @@ public abstract class PatienceController<T extends Patience<P>, P extends Enum<P
     }
 
     protected void registerMouseListeners(Parent pilesParent) {
-        pilesParent.setOnMousePressed(event -> mousePressed(event));
-        pilesParent.setOnMouseDragged(event -> mouseDragged(event));
-        pilesParent.setOnMouseReleased(event -> mouseReleased(event));
+        pilesParent.setOnMousePressed(this::mousePressed);
+        pilesParent.setOnMouseDragged(this::mouseDragged);
+        pilesParent.setOnMouseReleased(this::mouseReleased);
     }
 
     protected Collection<PileView> createPileViews(Collection<Pile> piles) {
@@ -56,53 +56,7 @@ public abstract class PatienceController<T extends Patience<P>, P extends Enum<P
 	public abstract Iterator<PileView> getSourcePiles();
 	public abstract Iterator<PileView> getTargetPiles();
 
-	//
-
-	protected String moveTopCards(final Pile source, final int cardCount, final Pile target) {
-		if (! getPatience().canMoveCards(source, cardCount, target)) {
-			return "Illegal move";
-		}
-		getPatience().moveCards(source, cardCount, target);
-		return null;
-	}
-
-	//
-
-	public static Pile findTarget(final Patience<?> patience, final Pile source, final int cardCount, final Iterator<? extends Pile> piles) {
-		while (piles.hasNext()) {
-			final Pile pile = piles.next();
-			if (patience.canMoveCards(source, cardCount, pile)) {
-				return pile;
-			}
-		}
-		return null;
-    }
-    
-    /*
-	public static Pile findTarget(final Pile source, final int cardCount, final Iterator<? extends Pile>... piles) {
-		Pile target = null;
-		for (int i = 0; i < piles.length; i++) {
-			final Iterator<? extends Pile> iterator = piles[i];
-			target = findTarget(source, cardCount, iterator);
-			if (target != null) {
-				return target;
-			}
-		}
-		return null;
-	}
-    */
-
-	public static <P extends Enum<P>> Pile findNamedTarget(final Patience<P> patience, final Class<P> enumClass, Pile source, final int cardCount, final Iterator<? extends Object> keys) {
-        while (keys.hasNext()) {
-            var pile = findTarget(patience, source, cardCount, patience.getPiles(Enum.valueOf(enumClass, String.valueOf(keys.next()))).iterator());
-            if (pile != null) {
-                return pile;
-            }
-        }
-        return null;
-	}
-
-	//
+    //
 
 	private static <T extends Node> T getElementAt(final Iterator<T> nodes, final Point2D scenePoint, final T checkAfter) {
 		boolean found = false;
@@ -135,10 +89,10 @@ public abstract class PatienceController<T extends Patience<P>, P extends Enum<P
 	private PileView dragging = null;
 
 	@FXML
-	protected void mousePressed(final MouseEvent e) {
+	public void mousePressed(final MouseEvent e) {
 		final Point2D scenePoint = getScenePoint(e);
         dragging = getPile(scenePoint, getSourcePiles(), null);
-        System.out.println("mousePressed.dragging=" + dragging);
+        // System.out.println("mousePressed.dragging=" + dragging);
 		if (dragging != null) {
 			e.consume();
 			dragging.startDragging(scenePoint, null, -1);
@@ -159,14 +113,14 @@ public abstract class PatienceController<T extends Patience<P>, P extends Enum<P
 	}
 
 	@FXML
-	protected void mouseDragged(final MouseEvent e) {
+	public void mouseDragged(final MouseEvent e) {
 		if (isDragging()) {
 			e.consume();
 			if (canDrag(dragging.getPile())) {
 				final Point2D scenePoint = getScenePoint(e);
 				dragging.drag(scenePoint);
 				final PileView dropping = getPile(scenePoint, getTargetPiles(), dragging);
-                System.out.println("mouseDragged.dropping=" + dropping);
+                // System.out.println("mouseDragged.dropping=" + dropping);
 				if (dropping != null) {
 					updateDragStatus(dragging.getPile(), dragging.getDragPos(), dropping.getPile());
 				}
@@ -175,26 +129,28 @@ public abstract class PatienceController<T extends Patience<P>, P extends Enum<P
 	}
 
 	@FXML
-	protected void mouseReleased(final MouseEvent e) {
+	public void mouseReleased(final MouseEvent e) {
 		final Point2D scenePoint = getScenePoint(e);
 		e.consume();
 		final PileView dropping = getPile(scenePoint, getTargetPiles(), dragging);
-		if (dragging != null && dropping == dragging) {
-			//			getPatience().deal();
-		} else if (isDragging()) {
+		if (isDragging()) {
 			final Pile source = dragging.getPile();
-			final int cardCount = source.getCardCount() - dragging.getDragPos();
+			int cardCount = source.getCardCount() - dragging.getDragPos();
 			final Point2D localPoint = getLocalPoint(dragging, scenePoint);
 			dragging.stopDragging(localPoint);
 			dragging = null;
 			Pile target = null;
 			if (e.getClickCount() > 1) {
-				target = getDefaultTarget(source, cardCount);
+                if (cardCount <= 1) {
+                    cardCount = -1;
+                }
+                target = patience.getDefaultTarget(source, cardCount);
 			} else if (dropping != null) {
 				target = dropping.getPile();
 			}
+            System.out.println("Source -(" + cardCount + ")> target: " + source + " -> " + target);
 			if (target != null && target != source) {
-				moveTopCards(source, cardCount, target);
+				patience.moveCards(source, cardCount, target);
 				final Boolean result = getPatience().updatePilesOperations();
 				if (result != null) {
 					doFinished(result);
@@ -204,19 +160,11 @@ public abstract class PatienceController<T extends Patience<P>, P extends Enum<P
 	}
 
 	protected void updateDragStatus(final Pile source, final int sourceCardPos, final Pile target) {
-	}
-
-	public void mouseClicked(final MouseEvent e) {}
-	public void mouseEntered(final MouseEvent e) {}
-	public void mouseExited(final MouseEvent  e) {}
+    }
 
 	//
 
 	protected void doFinished(final boolean result) {
-	}
-
-	protected Pile getDefaultTarget(final Pile source, final int cardCount) {
-		return findTarget(getPatience(), source, cardCount, patience.iterator());
 	}
 
 	//

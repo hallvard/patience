@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 import no.hal.patience.util.CardsPredicate;
 
@@ -36,13 +37,13 @@ public class MoveCardsOperationRule<P extends Enum<P>> implements PilesOperation
 
     private CardsPredicate sourcePreCondition = null;
 
-    public void setsourcePreCondition(CardsPredicate sourcePreCondition) {
+    public void setSourcePreCondition(CardsPredicate sourcePreCondition) {
         this.sourcePreCondition = sourcePreCondition;
     }
 
     private CardsPredicate targetPreConditon = null;
 
-    public void settargetPreConditon(CardsPredicate targetPreConditon) {
+    public void setTargetPreConditon(CardsPredicate targetPreConditon) {
         this.targetPreConditon = targetPreConditon;
     }
 
@@ -60,14 +61,26 @@ public class MoveCardsOperationRule<P extends Enum<P>> implements PilesOperation
 
     private CardsPredicate sourcePostCondition = null;
 
-    public void setsourcePostCondition(CardsPredicate sourcePostCondition) {
+    public void setSourcePostCondition(CardsPredicate sourcePostCondition) {
         this.sourcePostCondition = sourcePostCondition;
     }
 
     private CardsPredicate targetPostCondition = null;
 
-    public void settargetPostCondition(CardsPredicate targetPostCondition) {
+    public void setTargetPostCondition(CardsPredicate targetPostCondition) {
         this.targetPostCondition = targetPostCondition;
+    }
+
+    public Function<Pile, Integer> defaultPileCardCount = null;
+
+    public void setDefaultPileCardCount(Function<Pile, Integer> defaultPileCardCount) {
+        this.defaultPileCardCount = defaultPileCardCount;
+    }
+    
+    public Function<Integer, Integer> defaultCardCount = null;
+
+    public void setDefaultCardCount(Function<Integer, Integer> defaultCardCount) {
+        this.defaultCardCount = defaultCardCount;
     }
 
     protected boolean canApply(List<Card> source, int cardCount, List<Card> target) {
@@ -105,7 +118,7 @@ public class MoveCardsOperationRule<P extends Enum<P>> implements PilesOperation
 
     //
 
-    protected boolean validateConstraints(Patience<P> patience, Pile source, int sourcePos, Pile target, int targetPos, boolean checkSourceConstraints, boolean checkTargetConstraints) {
+    protected boolean validateConstraints(Patience<P> patience, Pile source, int cardCount, Pile target, int targetPos, boolean checkSourceConstraints, boolean checkTargetConstraints) {
         if (checkSourceConstraints) {
             if (patience.getPileKind(source) != sourcePileKind) {
                 return false;
@@ -122,14 +135,12 @@ public class MoveCardsOperationRule<P extends Enum<P>> implements PilesOperation
                 return false;
             }
         }
-        int cardCount = source.getCardCount() - sourcePos;
         List<Card> topCards = source.getTopCards(cardCount);
-        List<Card> postSourceCards = source.getCards(0, sourcePos);
-        List<Card> postTargetCards = target.insertedCards(targetPos, topCards);
         if (checkSourceConstraints) {
             if (movedCardsConstraint != null && (! movedCardsConstraint.test(topCards))) {
                 return false;
             }
+            List<Card> postSourceCards = source.getCards(0, source.getCardCount() - cardCount);
             if (sourcePostCondition != null && (! sourcePostCondition.test(postSourceCards))) {
                 return false;
             }
@@ -138,6 +149,7 @@ public class MoveCardsOperationRule<P extends Enum<P>> implements PilesOperation
             }
         }
         if (checkTargetConstraints) {
+            List<Card> postTargetCards = target.insertedCards(targetPos, topCards);
             if (targetPostCondition != null && (! targetPostCondition.test(postTargetCards))) {
                 return false;
             }
@@ -145,35 +157,60 @@ public class MoveCardsOperationRule<P extends Enum<P>> implements PilesOperation
         return true;
     }
 
+    private int getDefaultCardCount(Pile source) {
+        if (count > 0) {
+            return count;
+        }
+        if (defaultPileCardCount != null) {
+            return defaultPileCardCount.apply(source);
+        }
+        if (defaultCardCount != null) {
+            return defaultCardCount.apply(source.getCardCount());
+        }
+        return 1;
+    }
+
     @Override
-    public MoveCardsOperation accept(Patience<P> patience, Pile source, int sourcePos) {
-        if (! validateConstraints(patience, source, sourcePos, null, -1, true, false)) {
+    public MoveCardsOperation accept(Patience<P> patience, Pile source, int cardCount) {
+        if (cardCount < 0) {
+            cardCount = getDefaultCardCount(source);
+        }
+        if (! validateConstraints(patience, source, cardCount, null, -1, true, false)) {
             return null;
         }
         List<Pile> possibleTargets = new ArrayList<>();
-        Pile target = patience.getPile(targetPileKind);
-        if (target != null && validateConstraints(patience, source, sourcePos, target, -1, false, true)) {
-            possibleTargets.add(target);
-        }
-        Collection<Pile> targets = patience.getPiles(targetPileKind);
-        for (var pile : targets) {
-            if (validateConstraints(patience, source, sourcePos, pile, -1, false, true)) {
+        Pile target = null;
+        if (patience.hasPile(targetPileKind)) {
+            target = patience.getPile(targetPileKind);
+            if (target != null && validateConstraints(patience, source, cardCount, target, target.getCardCount(), false, true)) {
                 possibleTargets.add(target);
             }
         }
-        if (possibleTargets.size() == 1) {
+        if (patience.hasPiles(targetPileKind)) {
+            Collection<Pile> targets = patience.getPiles(targetPileKind);
+            for (var pile : targets) {
+                if (validateConstraints(patience, source, cardCount, pile, pile.getCardCount(), false, true)) {
+                    possibleTargets.add(target);
+                }
+            }
+        }
+        // System.out.println("Possible targets (" + possibleTargets.size() + "): " + possibleTargets);
+        if (possibleTargets.size() > 1) {
             target = possibleTargets.get(0);
         }
-        MoveCardsOperation op = new MoveCardsOperation(source, target, source.getCardCount() - sourcePos, reversed, turning);
+        MoveCardsOperation op = new MoveCardsOperation(source, target, cardCount, reversed, turning);
         return op;
     }
 
     @Override
-    public MoveCardsOperation accept(Patience<P> patience, Pile source, int sourcePos, Pile target, int targetPos) {
-        if (! validateConstraints(patience, source, sourcePos, target, targetPos, true, true)) {
+    public MoveCardsOperation accept(Patience<P> patience, Pile source, int cardCount, Pile target, int targetPos) {
+        if (cardCount < 0) {
+            cardCount = getDefaultCardCount(source);
+        }
+        if (! validateConstraints(patience, source, cardCount, target, targetPos, true, true)) {
             return null;
         }
-        MoveCardsOperation op = new MoveCardsOperation(source, target, source.getCardCount() - sourcePos, reversed, turning);
+        MoveCardsOperation op = new MoveCardsOperation(source, target, cardCount, reversed, turning);
         return op;
     }
 }

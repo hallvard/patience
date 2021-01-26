@@ -12,11 +12,14 @@ public abstract class FacesPredicate implements CardsPredicate {
 
     public FacesPredicate(int face, CardOrder cardOrder) {
         this.face = face;
+        if (cardOrder == null) {
+            cardOrder = CardOrder.identity();
+        }
         this.cardOrder = cardOrder;
     }
 
     public FacesPredicate(int face) {
-        this(face, CardOrder.identity());
+        this(face, null);
     }
 
     @Override
@@ -66,41 +69,41 @@ public abstract class FacesPredicate implements CardsPredicate {
         return stepping(face, 1, cardOrder);
     }
     public static FacesPredicate increasingFrom(int face) {
-        return increasingFrom(face, CardOrder.identity());
+        return increasingFrom(face, null);
     }
 
     public static FacesPredicate increasing(CardOrder cardOrder) {
         return stepping(-1, 1, cardOrder);
     }
     public static FacesPredicate increasing() {
-        return increasing(CardOrder.identity());
+        return increasing(null);
     }
 
     public static FacesPredicate decreasingFrom(int face, CardOrder cardOrder) {
         return stepping(face, -1, cardOrder);
     }
     public static FacesPredicate decreasingFrom(int face) {
-        return decreasingFrom(face, CardOrder.identity());
+        return decreasingFrom(face, null);
     }
 
     public static FacesPredicate decreasing(CardOrder cardOrder) {
         return stepping(-1, -1, cardOrder);
     }
     public static FacesPredicate decreasing() {
-        return decreasing(CardOrder.identity());
+        return decreasing(null);
     }
 
     public static FacesPredicate sameAs(int face, CardOrder cardOrder) {
         return stepping(face, 0, cardOrder);
     }
     public static FacesPredicate sameAs(int face) {
-        return sameAs(face, CardOrder.identity());
+        return sameAs(face, null);
     }
 
     public static FacesPredicate same(CardOrder cardOrder) {
         return stepping(-1, 0, cardOrder);
     }
     public static FacesPredicate same() {
-        return same(CardOrder.identity());
+        return same(null);
     }
 }

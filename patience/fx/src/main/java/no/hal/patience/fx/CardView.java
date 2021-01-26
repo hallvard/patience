@@ -25,6 +25,11 @@ public class CardView extends ImageView {
 		faceUpProperty().addListener((observable, oldValue, newValue) -> updateImage());
 	}
 
+    @Override
+    public String toString() {
+        return super.toString() + " for " + getCard();
+    }
+
 	protected void updateImage() {
 		setImage(isFaceUp() ? cardImageProvider.getImage(getCard()) : cardImageProvider.getFaceDownImage());
 	}

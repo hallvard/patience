@@ -57,6 +57,7 @@ public class IdiotController extends PatienceController<Idiot, Idiot.PileKinds> 
         sourcePiles.addAll(stacks.getPiles());
 
         targetPiles = new ArrayList<>();
+        targetPiles.add(deck);
         targetPiles.add(deck2);
         targetPiles.addAll(stacks.getPiles());
         targetPiles.addAll(suits.getPiles());

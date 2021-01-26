@@ -19,6 +19,14 @@ public class MoveCardsOperation implements PilesOperation {
         this.turning = turning;
     }
 
+    public Pile getSource() {
+        return source;
+    }
+
+    public Pile getTarget() {
+        return target;
+    }
+
     public int getCount() {
         return count;
     }
