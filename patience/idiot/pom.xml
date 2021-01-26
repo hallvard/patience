@@ -111,6 +111,8 @@
                 <configuration>                    
                     <options>
                         <option>--enable-preview</option>
+                        <option>-Xdebug</option>
+                        <option>-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=1044</option>
                     </options>
                     <mainClass>no.hal.patience.idiot.fx.IdiotApp</mainClass>
                 </configuration>

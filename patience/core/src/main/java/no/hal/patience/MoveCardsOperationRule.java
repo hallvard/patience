@@ -141,6 +141,11 @@ public class MoveCardsOperationRule<P extends Enum<P>> implements PilesOperation
                 return false;
             }
             List<Card> postSourceCards = source.getCards(0, source.getCardCount() - cardCount);
+            // test the pile's own constraint
+            if (! source.validateConstraint(postSourceCards)) {
+                return false;
+            }
+            // test this rule's constraint
             if (sourcePostCondition != null && (! sourcePostCondition.test(postSourceCards))) {
                 return false;
             }
@@ -150,6 +155,11 @@ public class MoveCardsOperationRule<P extends Enum<P>> implements PilesOperation
         }
         if (checkTargetConstraints) {
             List<Card> postTargetCards = target.insertedCards(targetPos, topCards);
+            // test the pile's own constraint
+            if (! target.validateConstraint(postTargetCards)) {
+                return false;
+            }
+            // test this rule's constraint
             if (targetPostCondition != null && (! targetPostCondition.test(postTargetCards))) {
                 return false;
             }
@@ -190,13 +200,16 @@ public class MoveCardsOperationRule<P extends Enum<P>> implements PilesOperation
             Collection<Pile> targets = patience.getPiles(targetPileKind);
             for (var pile : targets) {
                 if (validateConstraints(patience, source, cardCount, pile, pile.getCardCount(), false, true)) {
-                    possibleTargets.add(target);
+                    possibleTargets.add(pile);
                 }
             }
         }
         // System.out.println("Possible targets (" + possibleTargets.size() + "): " + possibleTargets);
-        if (possibleTargets.size() > 1) {
+        if (possibleTargets.size() >= 1) {
             target = possibleTargets.get(0);
+        }
+        if (target == null) {
+            return null;
         }
         MoveCardsOperation op = new MoveCardsOperation(source, target, cardCount, reversed, turning);
         return op;
