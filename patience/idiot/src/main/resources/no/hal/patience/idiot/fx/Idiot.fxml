@@ -7,30 +7,30 @@
 <?import javafx.geometry.Dimension2D?>
 
 <VBox fx:id="pilesParent" xmlns:fx="http://javafx.com/fxml/1" fx:controller="no.hal.patience.idiot.fx.IdiotController">
-    <PilesView fx:id="suits" pileSpacing="20">
+    <PilesView fx:id="suitsView" pileSpacing="20">
         <pilesFaceUpOffset>
             <Dimension2D width="1" height="0"/>
         </pilesFaceUpOffset>
     </PilesView>
     <HBox>
-        <PilesView fx:id="stacks" pileSpacing="10">
+        <PilesView fx:id="stacksView" pileSpacing="10">
             <pilesFaceUpOffset>
                 <Dimension2D width="0" height="30"/>
             </pilesFaceUpOffset>
         </PilesView>
-        <PileView fx:id="extras">
+        <PileView fx:id="extrasView">
             <faceDownOffset>
                 <Dimension2D width="3" height="0"/>
             </faceDownOffset>
         </PileView>
     </HBox>
     <HBox>
-        <PileView fx:id="deck">
+        <PileView fx:id="deckView">
             <faceDownOffset>
                 <Dimension2D width="1" height="0"/>
             </faceDownOffset>
         </PileView>
-        <PileView fx:id="deck2">
+        <PileView fx:id="deck2View">
             <faceUpOffset>
                 <Dimension2D width="30" height="0"/>
             </faceUpOffset>

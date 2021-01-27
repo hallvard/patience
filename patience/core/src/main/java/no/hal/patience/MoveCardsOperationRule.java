@@ -31,6 +31,14 @@ public class MoveCardsOperationRule<P extends Enum<P>> implements PilesOperation
         this(sourcePileKind, targetPileKind, -1);
     }
 
+    public Enum<P> getSourcePileKind() {
+        return sourcePileKind;
+    }
+
+    public Enum<P> getTargetPileKind() {
+        return targetPileKind;
+    }
+
     public int getCount() {
         return count;
     }

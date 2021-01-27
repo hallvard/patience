@@ -149,5 +149,6 @@
         <module>core</module>
         <module>fx</module>
         <module>idiot</module>
+        <module>fourxfour</module>
     </modules>
 </project>

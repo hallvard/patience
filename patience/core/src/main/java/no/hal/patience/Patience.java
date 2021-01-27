@@ -119,6 +119,31 @@ public abstract class Patience<P extends Enum<P>> implements Iterable<Pile> {
 
     //
 
+    protected Collection<Pile> getMoveCardsOperationPiles(Function<MoveCardsOperationRule<P>, Enum<P>> kind) {
+        Collection<Pile> piles = new ArrayList<>();
+        for (var rule : pilesOperationRules) {
+            if (rule instanceof MoveCardsOperationRule<P> mcor) {
+                var pileKind = kind.apply(mcor);
+                if (hasPile(pileKind)) {
+                    piles.add(getPile(pileKind));
+                } else if (hasPiles(pileKind)) {
+                    piles.addAll(getPiles(pileKind));
+                }
+            }
+        }
+        return piles;
+    }
+
+    public Collection<Pile> getMoveCardsOperationSourcePiles() {
+        return getMoveCardsOperationPiles(MoveCardsOperationRule::getSourcePileKind);
+    }
+
+    public Collection<Pile> getMoveCardsOperationTargetPiles() {
+        return getMoveCardsOperationPiles(MoveCardsOperationRule::getTargetPileKind);
+    }
+
+    //
+
     protected MoveCardsOperation findMoveCardsOperation(Function<PilesOperationRule<P>, MoveCardsOperation> fun) {
         for (var rule : pilesOperationRules) {
             MoveCardsOperation op = fun.apply(rule);

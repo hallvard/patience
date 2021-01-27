@@ -1,7 +1,10 @@
 package no.hal.patience.fx;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
@@ -31,12 +34,35 @@ public abstract class PatienceController<T extends Patience<P>, P extends Enum<P
         patience.updatePilesOperations();
 
         if (pilesParent != null) {
+            createPileViews(pilesParent);
             registerMouseListeners(pilesParent);
         }
     }
 
     protected void initialize() {
         initialize(null);
+    }
+
+    private Map<Pile, PileView> pileViewMap = null;
+
+    protected void createPileViews(Parent pilesParent) {
+        pileViewMap = new HashMap<>();
+        for (var pileCategory : getPatience().getPileCategories()) {
+            Node view = pilesParent.lookup("#" + pileCategory.name() + "View");
+            if (view instanceof PilesView pv) {
+                var pileViews = createPileViews(pileCategory);
+                pv.getPiles().addAll(pileViews);
+                pileViews.forEach(pileView -> pileViewMap.put(pileView.getPile(), pileView));
+            }
+        }
+        for (var pileName : getPatience().getPileNames()) {
+            Node view = pilesParent.lookup("#" + pileName.name() + "View");
+            if (view instanceof PileView pv) {
+                var pile = getPatience().getPile(pileName);
+                pv.setPile(pile);
+                pileViewMap.put(pile, pv);
+            }
+        }
     }
 
     protected void registerMouseListeners(Parent pilesParent) {
@@ -53,8 +79,13 @@ public abstract class PatienceController<T extends Patience<P>, P extends Enum<P
         return createPileViews(getPatience().getPiles(category));
     }
 
-	public abstract Iterator<PileView> getSourcePiles();
-	public abstract Iterator<PileView> getTargetPiles();
+	public Iterator<PileView> getSourcePiles() {
+        return getPatience().getMoveCardsOperationSourcePiles().stream().map(pileViewMap::get).collect(Collectors.toList()).iterator();
+    }
+
+	public Iterator<PileView> getTargetPiles() {
+        return getPatience().getMoveCardsOperationTargetPiles().stream().map(pileViewMap::get).collect(Collectors.toList()).iterator();
+    }
 
     //
 

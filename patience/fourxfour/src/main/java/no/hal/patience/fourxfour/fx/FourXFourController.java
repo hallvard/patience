@@ -7,11 +7,11 @@ import no.hal.patience.fx.PileView;
 import no.hal.patience.fx.PilesView;
 import no.hal.patience.idiot.core.Idiot;
 
-public class IdiotController extends PatienceController<Idiot, Idiot.PileKinds> {
+public class FourXFourController extends PatienceController<FourXFour, FourXFour.PileKinds> {
 
     @Override
-    protected Idiot createPatience() {
-        return new Idiot();
+    protected FourXFour createPatience() {
+        return new FourXFour();
     }
 
     //
@@ -21,9 +21,6 @@ public class IdiotController extends PatienceController<Idiot, Idiot.PileKinds> 
 
     @FXML private PilesView suitsView;
     @FXML private PilesView stacksView;
-    @FXML private PileView extrasView;
-    @FXML private PileView deckView;
-    @FXML private PileView deck2View;
 
     @FXML
 	protected void initialize() {
