@@ -119,7 +119,7 @@ public class Pile implements Iterable<Card>, Cards {
         return getCardCount() == 0;
     }
 
-    private static int adjustIndex(List<Card> cards, int index) {
+    static int adjustIndex(List<Card> cards, int index) {
         if (index > cards.size()) {
             index = cards.size();
         } else if (index < 0) {

@@ -2,7 +2,6 @@
 
 <?import javafx.scene.layout.VBox?>
 <?import no.hal.patience.fx.PilesView?>
-<?import no.hal.patience.fx.PileView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.geometry.Dimension2D?>
 
@@ -12,14 +11,12 @@
             <Dimension2D width="1" height="0"/>
         </pilesFaceUpOffset>
     </PilesView>
-    <HBox>
-        <PilesView fx:id="stacksView" pileSpacing="10">
-            <pilesFaceDownOffset>
-                <Dimension2D width="0" height="20"/>
-            </pilesFaceDownOffset>
-            <pilesFaceUpOffset>
-                <Dimension2D width="0" height="30"/>
-            </pilesFaceUpOffset>
-        </PilesView>
-    </HBox>
+    <PilesView fx:id="stacksView" pileSpacing="10">
+        <pilesFaceDownOffset>
+            <Dimension2D width="0" height="40"/>
+        </pilesFaceDownOffset>
+        <pilesFaceUpOffset>
+            <Dimension2D width="0" height="40"/>
+        </pilesFaceUpOffset>
+    </PilesView>
 </VBox>

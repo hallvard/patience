@@ -1,11 +1,10 @@
-package no.hal.patience.idiot.fx;
+package no.hal.patience.fourxfour.fx;
 
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import no.hal.patience.fx.PatienceController;
-import no.hal.patience.fx.PileView;
 import no.hal.patience.fx.PilesView;
-import no.hal.patience.idiot.core.Idiot;
+import no.hal.patience.fourxfour.core.FourXFour;
 
 public class FourXFourController extends PatienceController<FourXFour, FourXFour.PileKinds> {
 

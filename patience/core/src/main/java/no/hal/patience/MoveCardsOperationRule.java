@@ -45,44 +45,51 @@ public class MoveCardsOperationRule<P extends Enum<P>> implements PilesOperation
 
     private CardsPredicate sourcePreCondition = null;
 
-    public void setSourcePreCondition(CardsPredicate sourcePreCondition) {
+    public MoveCardsOperationRule<P> sourcePreCondition(CardsPredicate sourcePreCondition) {
         this.sourcePreCondition = sourcePreCondition;
+        return this;
     }
 
     private CardsPredicate targetPreConditon = null;
 
-    public void setTargetPreConditon(CardsPredicate targetPreConditon) {
+    public MoveCardsOperationRule<P> targetPreCondition(CardsPredicate targetPreConditon) {
         this.targetPreConditon = targetPreConditon;
+        return this;
     }
 
     private CardsPredicate movedCardsConstraint = null;
 
-    public void setMovedCardsConstraint(CardsPredicate movedCardsConstraint) {
+    public MoveCardsOperationRule<P> movedCardsConstraint(CardsPredicate movedCardsConstraint) {
         this.movedCardsConstraint = movedCardsConstraint;
+        return this;
     }
 
     private CardsPredicate combinedCardsConstraint = null;
 
-    public void setCombinedCardsConstraint(CardsPredicate combinedCardsConstraint) {
+    public MoveCardsOperationRule<P> combinedCardsConstraint(CardsPredicate combinedCardsConstraint) {
         this.combinedCardsConstraint = combinedCardsConstraint;
+        return this;
     }
 
     private CardsPredicate sourcePostCondition = null;
 
-    public void setSourcePostCondition(CardsPredicate sourcePostCondition) {
+    public MoveCardsOperationRule<P> sourcePostCondition(CardsPredicate sourcePostCondition) {
         this.sourcePostCondition = sourcePostCondition;
+        return this;
     }
 
     private CardsPredicate targetPostCondition = null;
 
-    public void setTargetPostCondition(CardsPredicate targetPostCondition) {
+    public MoveCardsOperationRule<P> targetPostCondition(CardsPredicate targetPostCondition) {
         this.targetPostCondition = targetPostCondition;
+        return this;
     }
 
     public Function<Pile, Integer> defaultPileCardCount = null;
 
-    public void setDefaultPileCardCount(Function<Pile, Integer> defaultPileCardCount) {
+    public MoveCardsOperationRule<P> defaultPileCardCount(Function<Pile, Integer> defaultPileCardCount) {
         this.defaultPileCardCount = defaultPileCardCount;
+        return this;
     }
     
     public Function<Integer, Integer> defaultCardCount = null;
@@ -172,6 +179,11 @@ public class MoveCardsOperationRule<P extends Enum<P>> implements PilesOperation
                 return false;
             }
         }
+        if (checkSourceConstraints && checkTargetConstraints) {
+            if (combinedCardsConstraint != null && (! combinedCardsConstraint.test(target.getTopCard(), Pile.getBottomCard(topCards)))) {
+                return false;
+            }
+        }
         return true;
     }
 
@@ -200,14 +212,14 @@ public class MoveCardsOperationRule<P extends Enum<P>> implements PilesOperation
         Pile target = null;
         if (patience.hasPile(targetPileKind)) {
             target = patience.getPile(targetPileKind);
-            if (target != null && validateConstraints(patience, source, cardCount, target, target.getCardCount(), false, true)) {
+            if (target != null && validateConstraints(patience, source, cardCount, target, target.getCardCount(), true, true)) {
                 possibleTargets.add(target);
             }
         }
         if (patience.hasPiles(targetPileKind)) {
             Collection<Pile> targets = patience.getPiles(targetPileKind);
             for (var pile : targets) {
-                if (validateConstraints(patience, source, cardCount, pile, pile.getCardCount(), false, true)) {
+                if (validateConstraints(patience, source, cardCount, pile, pile.getCardCount(), true, true)) {
                     possibleTargets.add(pile);
                 }
             }

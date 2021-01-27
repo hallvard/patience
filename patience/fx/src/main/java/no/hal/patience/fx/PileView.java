@@ -78,7 +78,7 @@ public class PileView extends Region implements CardsListener<Pile> {
 
 	//
 
-	public SimpleDoubleProperty cardScaling = new SimpleDoubleProperty(1.0);
+	private SimpleDoubleProperty cardScaling = new SimpleDoubleProperty(1.0);
 
 	public SimpleDoubleProperty cardScalingProperty() {
 		return cardScaling;
@@ -90,7 +90,9 @@ public class PileView extends Region implements CardsListener<Pile> {
 		cardScaling.set(scaling);
 	}
 
-	public SimpleObjectProperty<Dimension2D> faceDownOffset = new SimpleObjectProperty<Dimension2D>(new Dimension2D(10.0,  10.0));
+    //
+
+	private SimpleObjectProperty<Dimension2D> faceDownOffset = new SimpleObjectProperty<Dimension2D>(new Dimension2D(10.0,  10.0));
 
 	public SimpleObjectProperty<Dimension2D> faceDownOffsetProperty() {
 		return faceDownOffset;
@@ -102,7 +104,9 @@ public class PileView extends Region implements CardsListener<Pile> {
 		faceDownOffset.set(offset);
 	}
 
-	public SimpleObjectProperty<Dimension2D> faceUpOffset = new SimpleObjectProperty<Dimension2D>(new Dimension2D(10.0,  10.0));
+    //
+    
+	private SimpleObjectProperty<Dimension2D> faceUpOffset = new SimpleObjectProperty<Dimension2D>(new Dimension2D(10.0,  10.0));
 
 	public SimpleObjectProperty<Dimension2D> faceUpOffsetProperty() {
 		return faceUpOffset;

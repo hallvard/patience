@@ -180,7 +180,7 @@ public abstract class PatienceController<T extends Patience<P>, P extends Enum<P
 				target = dropping.getPile();
 			}
             System.out.println("Source -(" + cardCount + ")> target: " + source + " -> " + target);
-			if (target != null && target != source) {
+			if (target != null) {
 				patience.moveCards(source, cardCount, target);
 				final Boolean result = getPatience().updatePilesOperations();
 				if (result != null) {
