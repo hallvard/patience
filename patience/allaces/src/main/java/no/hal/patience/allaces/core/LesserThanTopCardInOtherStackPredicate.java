@@ -20,7 +20,8 @@ public class LesserThanTopCardInOtherStackPredicate implements CardsPredicate {
     @Override
     public boolean test(List<Card> cards) {
         for (var stack : stacks) {
-            if (cardOrder.lessThan(cards.get(cards.size() - 1), stack.getTopCard())) {
+            Card topCard = stack.getTopCard();
+            if (topCard != null && cardOrder.lessThan(cards.get(cards.size() - 1), topCard)) {
                 return true;
             }
         }

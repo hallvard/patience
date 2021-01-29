@@ -102,10 +102,14 @@ public class Pile implements Iterable<Card>, Cards {
         return new Pile(CardsPredicate.whatever, Card.cards(initialCards));
     }
 
-    public static Pile deck() {
+    public static Pile deck(boolean faceDown) {
         Pile deck = Pile.of(CardKind.values());
+        deck.cards.stream().forEach(card -> card.setFaceDown(faceDown));
         deck.shuffle();
         return deck;
+    }
+    public static Pile deck() {
+        return deck(false);
     }
 
     //

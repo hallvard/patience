@@ -29,8 +29,7 @@ public class DealToPilesOperation implements PilesOperation {
         return deck.getCardCount() >= cardCount;
     }
 
-    @Override
-    public void apply() {
+    public static void deal(Pile deck, int cardCount, Boolean faceDown, Pile... piles) {
         List<Card> cards = deck.takeCards(cardCount);
         // distribute cards among piles
         for (int i = 0; i < cards.size(); i++) {
@@ -40,5 +39,10 @@ public class DealToPilesOperation implements PilesOperation {
             }
             piles[i % piles.length].addCards(List.of(card));
         }
+    }
+
+    @Override
+    public void apply() {
+        deal(deck, cardCount, faceDown, piles);
     }
 }

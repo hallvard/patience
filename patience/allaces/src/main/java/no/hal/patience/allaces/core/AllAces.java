@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import no.hal.patience.AbstractMoveCardsOperationRule;
+import no.hal.patience.Card;
 import no.hal.patience.CardOrder;
 import no.hal.patience.MoveCardsOperationRule;
 import no.hal.patience.Patience;
@@ -23,12 +24,14 @@ public class AllAces extends Patience<AllAces.PileKinds> {
 
     @Override
     public void initPiles() {
-        putPile(PileKinds.deck, Pile.deck());
+        Pile deck = Pile.deck(true);
+        putPile(PileKinds.deck, deck);
         for (int i = 0; i < stacks.length; i++) {
             stacks[i] = Pile.empty();
         }
         putPiles(PileKinds.stacks, Arrays.asList(stacks));
         putPile(PileKinds.deck2, Pile.empty());
+        DealToPilesOperation.deal(deck, stacks.length, false, stacks);
     }
 
     private PilesOperationRule<PileKinds> deckToStacks = new AbstractMoveCardsOperationRule<PileKinds>(PileKinds.deck, PileKinds.stacks, 4) {
@@ -40,13 +43,12 @@ public class AllAces extends Patience<AllAces.PileKinds> {
     private PilesOperationRule<PileKinds> stacksToEmptyPile = new MoveCardsOperationRule<PileKinds>(PileKinds.stacks, PileKinds.stacks, 1)
             .targetPreCondition(SizePredicate.empty())
             ;
-    private PilesOperationRule<PileKinds> stacksToDeck2 = new MoveCardsOperationRule<PileKinds>(PileKinds.stacks, PileKinds.deck2, 1)
-            .movedCardsConstraint(new LesserThanTopCardInOtherStackPredicate(CardOrder.aceIs14(), stacks))
-            ;
-
+            
     @Override
     public void initPilesOperationRules() {
         super.initPilesOperationRules();
+        PilesOperationRule<PileKinds> stacksToDeck2 = new MoveCardsOperationRule<PileKinds>(PileKinds.stacks, PileKinds.deck2, 1)
+                .movedCardsConstraint(new LesserThanTopCardInOtherStackPredicate(CardOrder.aceIs14(), stacks));
         addPilesOperationRules(List.of(
             deckToStacks,
             stacksToEmptyPile,
