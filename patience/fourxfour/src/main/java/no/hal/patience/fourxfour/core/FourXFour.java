@@ -4,9 +4,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import no.hal.patience.Card;
+import no.hal.patience.MoveCardsOperation;
 import no.hal.patience.MoveCardsOperationRule;
 import no.hal.patience.Patience;
 import no.hal.patience.Pile;
+import no.hal.patience.PilesOperationRule;
 import no.hal.patience.SuitKind;
 import no.hal.patience.util.CardsPredicate;
 import no.hal.patience.util.FacesPredicate;
@@ -47,25 +49,25 @@ public class FourXFour extends Patience<FourXFour.PileKinds> {
         putPiles(PileKinds.stacks, Arrays.asList(stacks));
     }
 
-    private MoveCardsOperationRule<PileKinds> stacksToSuitsRule = new MoveCardsOperationRule<PileKinds>(PileKinds.stacks, PileKinds.suits, -1, true, false)
-        .movedCardsConstraint(CardsPredicate.faceUp());
-    private MoveCardsOperationRule<PileKinds> stacksToStacksRule = new MoveCardsOperationRule<PileKinds>(PileKinds.stacks, PileKinds.stacks)
+    private PilesOperationRule<PileKinds> stacksToSuitsRule = new MoveCardsOperationRule<PileKinds>(PileKinds.stacks, PileKinds.suits, -1)
+            .options(new MoveCardsOperation.Options().reversed())
+            .movedCardsConstraint(CardsPredicate.faceUp());
+    private PilesOperationRule<PileKinds> stacksToStacksRule = new MoveCardsOperationRule<PileKinds>(PileKinds.stacks, PileKinds.stacks)
+            .options(new MoveCardsOperation.Options().autoRevealTopCard())
             .movedCardsConstraint(CardsPredicate.faceUp())
             .targetPreCondition(CardsPredicate.faceUp().ofTopCard())
             .combinedCardsConstraint(SuitsPredicate.same().and(FacesPredicate.decreasing()));
-    private MoveCardsOperationRule<PileKinds> stacksToEmptyStacksRule = new MoveCardsOperationRule<PileKinds>(PileKinds.stacks, PileKinds.stacks)
+    private PilesOperationRule<PileKinds> stacksToEmptyStacksRule = new MoveCardsOperationRule<PileKinds>(PileKinds.stacks, PileKinds.stacks)
+            .options(new MoveCardsOperation.Options().autoRevealTopCard())
             .movedCardsConstraint(CardsPredicate.faceUp().and(FacesPredicate.sameAs(13).ofBottomCard()))
             .targetPreCondition(SizePredicate.empty());
-    private MoveCardsOperationRule<PileKinds> stacksTurnRule = new MoveCardsOperationRule<PileKinds>(PileKinds.stacks, PileKinds.stacks, 1, false, true)
-            .sourcePreCondition(CardsPredicate.faceDown())
-            .combinedCardsConstraint(SuitsPredicate.same().and(FacesPredicate.same()));
 
     @Override
     public void initPilesOperationRules() {
         super.initPilesOperationRules();
         addPilesOperationRules(List.of(
             stacksToSuitsRule,
-            stacksToStacksRule, stacksToEmptyStacksRule, stacksTurnRule
+            stacksToStacksRule, stacksToEmptyStacksRule
         ));
     }
 

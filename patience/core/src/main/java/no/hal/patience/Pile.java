@@ -64,12 +64,16 @@ public class Pile implements Iterable<Card>, Cards {
         checkConstraints(newCards);
         List<Card> oldCards = this.cards;
         this.cards = newCards;
+        fireCardsChanged(oldCards, newCards);
+        return oldCards;
+    }
+
+    protected void fireCardsChanged(List<Card> oldCards, List<Card> newCards) {
         if (cardsListeners != null) {
             for (CardsListener<Pile> listener : cardsListeners) {
                 listener.cardsChanged(this, oldCards, newCards);
             }
         }
-        return oldCards;
     }
 
     //
@@ -246,6 +250,25 @@ public class Pile implements Iterable<Card>, Cards {
 
     public List<Card> removeCards(int start, int end) {
         return setAllCards(removedCards(start, end));
+    }
+
+    public void revealTopCards(int count) {
+        int revealCount = 0;
+        count = Math.min(count, cards.size());
+        while (count > 0) {
+            Card card = cards.get(cards.size() - count);
+            if (card.isFaceDown()) {
+                card.turn();
+                revealCount++;
+            }
+            count--;
+        }
+        if (revealCount > 0) {
+            fireCardsChanged(cards, cards);
+        }
+    }
+    public void revealTopCard() {
+        revealTopCards(1);
     }
 
     //

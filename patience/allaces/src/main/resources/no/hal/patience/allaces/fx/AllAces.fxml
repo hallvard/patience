@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import no.hal.patience.fx.PilesView?>
+<?import no.hal.patience.fx.PileView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.geometry.Dimension2D?>
+<?import no.hal.patience.allaces.core.AllAces?>
+
+<VBox fx:id="pilesParent" xmlns:fx="http://javafx.com/fxml/1" fx:controller="no.hal.patience.allaces.fx.AllAcesController">
+    <HBox>
+        <PilesView fx:id="stacksView" pileSpacing="10">
+            <pilesFaceDownOffset>
+                <Dimension2D width="0" height="40"/>
+            </pilesFaceDownOffset>
+            <pilesFaceUpOffset>
+                <Dimension2D width="0" height="40"/>
+            </pilesFaceUpOffset>
+        </PilesView>
+        <PileView fx:id="deck2View">
+            <faceUpOffset>
+                <Dimension2D width="1" height="0"/>
+            </faceUpOffset>
+        </PileView>
+    </HBox>
+    <PileView fx:id="deckView">
+        <faceDownOffset>
+            <Dimension2D width="1" height="0"/>
+        </faceDownOffset>
+    </PileView>
+</VBox>

@@ -3,12 +3,14 @@ package no.hal.patience.idiot.core;
 import java.util.Arrays;
 import java.util.List;
 
+import no.hal.patience.AbstractMoveCardsOperationRule;
 import no.hal.patience.Card;
 import no.hal.patience.CardOrder;
 import no.hal.patience.MoveCardsOperation;
 import no.hal.patience.MoveCardsOperationRule;
 import no.hal.patience.Patience;
 import no.hal.patience.Pile;
+import no.hal.patience.PilesOperationRule;
 import no.hal.patience.SuitKind;
 import no.hal.patience.util.CardsPredicate;
 import no.hal.patience.util.FacesPredicate;
@@ -56,21 +58,23 @@ public class Idiot extends Patience<Idiot.PileKinds> {
         MoveCardsOperation.moveCardsReversedTurning(getPile(PileKinds.deck), getPile(PileKinds.deck2), 3);
     }
 
-    private MoveCardsOperationRule<PileKinds> dealRule = new MoveCardsOperationRule<PileKinds>(PileKinds.deck, PileKinds.deck2, -1, true, true);
-    private MoveCardsOperationRule<PileKinds> undealRule = new MoveCardsOperationRule<PileKinds>(PileKinds.deck2, PileKinds.deck, -1, true, true);
-    private MoveCardsOperationRule<PileKinds> extrasToStacksRule = new MoveCardsOperationRule<PileKinds>(PileKinds.extras, PileKinds.stacks, 1);
-    private MoveCardsOperationRule<PileKinds> extrasToSuitsRule = new MoveCardsOperationRule<PileKinds>(PileKinds.extras, PileKinds.suits, 1);
-    private MoveCardsOperationRule<PileKinds> deck2ToStacksRule = new MoveCardsOperationRule<PileKinds>(PileKinds.deck2, PileKinds.stacks, 1);
-    private MoveCardsOperationRule<PileKinds> deck2ToSuitsRule = new MoveCardsOperationRule<PileKinds>(PileKinds.deck2, PileKinds.suits, 1);
-    private MoveCardsOperationRule<PileKinds> stacksToStacksRule = new MoveCardsOperationRule<PileKinds>(PileKinds.stacks, PileKinds.stacks);
-    private MoveCardsOperationRule<PileKinds> stacksToSuitsRule = new MoveCardsOperationRule<PileKinds>(PileKinds.stacks, PileKinds.suits, 1);
+    private AbstractMoveCardsOperationRule<PileKinds> dealRule = new MoveCardsOperationRule<PileKinds>(PileKinds.deck, PileKinds.deck2, -1)
+            .options(new MoveCardsOperation.Options().reversed().turning())
+            .targetPreCondition(SizePredicate.empty())
+            .sourcePostCondition(SizePredicate.empty());
+    private PilesOperationRule<PileKinds> undealRule = new MoveCardsOperationRule<PileKinds>(PileKinds.deck2, PileKinds.deck, -1)
+            .options(new MoveCardsOperation.Options().reversed().turning());
+    private PilesOperationRule<PileKinds> extrasToStacksRule = new MoveCardsOperationRule<PileKinds>(PileKinds.extras, PileKinds.stacks, 1);
+    private PilesOperationRule<PileKinds> extrasToSuitsRule = new MoveCardsOperationRule<PileKinds>(PileKinds.extras, PileKinds.suits, 1);
+    private AbstractMoveCardsOperationRule<PileKinds> deck2ToStacksRule = new MoveCardsOperationRule<PileKinds>(PileKinds.deck2, PileKinds.stacks, 1);
+    private PilesOperationRule<PileKinds> deck2ToSuitsRule = new MoveCardsOperationRule<PileKinds>(PileKinds.deck2, PileKinds.suits, 1);
+    private PilesOperationRule<PileKinds> stacksToStacksRule = new MoveCardsOperationRule<PileKinds>(PileKinds.stacks, PileKinds.stacks);
+    private PilesOperationRule<PileKinds> stacksToSuitsRule = new MoveCardsOperationRule<PileKinds>(PileKinds.stacks, PileKinds.suits, 1);
 
     @Override
     public void initPilesOperationRules() {
         super.initPilesOperationRules();
         dealRule.setDefaultCardCount(size -> size >= 3 ? 3 : 1);
-        undealRule.setTargetPreConditon(SizePredicate.empty());
-        undealRule.setSourcePostCondition(SizePredicate.empty());
         addPilesOperationRules(List.of(
             dealRule, undealRule,
             extrasToStacksRule, extrasToSuitsRule,
@@ -82,7 +86,7 @@ public class Idiot extends Patience<Idiot.PileKinds> {
     @Override
     public boolean updatePilesOperations() {
         super.updatePilesOperations();
-        deck2ToStacksRule.setTargetPreConditon(SizePredicate.atLeast(getPile(PileKinds.extras).isEmpty() ? 0 : 1));
+        deck2ToStacksRule.targetPreCondition(SizePredicate.atLeast(getPile(PileKinds.extras).isEmpty() ? 0 : 1));
         return getPile(PileKinds.deck).getCardCount() + getPile(PileKinds.deck2).getCardCount() > 0;
     }
 

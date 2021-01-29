@@ -144,9 +144,9 @@ public abstract class Patience<P extends Enum<P>> implements Iterable<Pile> {
 
     //
 
-    protected MoveCardsOperation findMoveCardsOperation(Function<PilesOperationRule<P>, MoveCardsOperation> fun) {
+    protected PilesOperation findMoveCardsOperation(Function<PilesOperationRule<P>, PilesOperation> fun) {
         for (var rule : pilesOperationRules) {
-            MoveCardsOperation op = fun.apply(rule);
+            PilesOperation op = fun.apply(rule);
             if (op != null) {
                 return op;
             }
@@ -154,17 +154,17 @@ public abstract class Patience<P extends Enum<P>> implements Iterable<Pile> {
         return null;
     }
 
-    protected MoveCardsOperation findMoveCardsOperation(Pile source, int cardCount) {
+    protected PilesOperation findMoveCardsOperation(Pile source, int cardCount) {
         return findMoveCardsOperation(rule -> rule.accept(this, source, cardCount));
     }
 
-    protected MoveCardsOperation findMoveCardsOperation(Pile source, int cardCount, Pile target) {
+    protected PilesOperation findMoveCardsOperation(Pile source, int cardCount, Pile target) {
         return findMoveCardsOperation(rule -> rule.accept(this, source, cardCount, target, target.getCardCount()));
     }
     
     public Pile getDefaultTarget(Pile source, int cardCount) {
-        MoveCardsOperation op = findMoveCardsOperation(source, cardCount);
-		return (op != null ? op.getTarget() : null);
+        PilesOperation op = findMoveCardsOperation(source, cardCount);
+		return (op instanceof MoveCardsOperation mco ? mco.getTarget() : null);
 	}
 
     public boolean canMoveCards(Pile source, int cardCount, Pile target) {
@@ -172,7 +172,7 @@ public abstract class Patience<P extends Enum<P>> implements Iterable<Pile> {
 	}
 
 	public void moveCards(Pile source, int cardCount, Pile target) {
-        MoveCardsOperation op = findMoveCardsOperation(source, cardCount, target);
+        PilesOperation op = findMoveCardsOperation(source, cardCount, target);
         if (op != null && op.canApply()) {
             op.apply();
         }

@@ -8,6 +8,10 @@ public interface CardOrder extends Function<CardKind, Integer> {
         return apply(cardKind);
     }
 
+    default public int ordinal(Card card) {
+        return ordinal(card.getCardKind());
+    }
+
     //
 
     public static CardOrder of(Function<CardKind, Integer> fun) {
@@ -36,5 +40,27 @@ public interface CardOrder extends Function<CardKind, Integer> {
 
     public static CardOrder startsAt(int startFace) {
         return of(cardKind -> (cardKind.getFace() + 13 - startFace) % 13 + 1);
+    }
+
+    //
+
+    default boolean equal(Card card1, Card card2) {
+        return ordinal(card1) == ordinal(card2);
+    }
+
+    default boolean lessThan(Card card1, Card card2) {
+        return ordinal(card1) < ordinal(card2);
+    }
+
+    default boolean lessThanEqual(Card card1, Card card2) {
+        return ordinal(card1) <= ordinal(card2);
+    }
+
+    default boolean greaterThan(Card card1, Card card2) {
+        return ordinal(card1) > ordinal(card2);
+    }
+
+    default boolean greaterThanEqual(Card card1, Card card2) {
+        return ordinal(card1) >= ordinal(card2);
     }
 }
