@@ -10,11 +10,8 @@
 
 <VBox fx:id="pilesParent" xmlns:fx="http://javafx.com/fxml/1" fx:controller="no.hal.patience.allaces.fx.AllAcesController">
     <PilesView fx:id="stacksView" pileSpacing="10">
-        <pilesFaceDownOffset>
-            <Dimension2D width="0" height="40"/>
-        </pilesFaceDownOffset>
         <pilesFaceUpOffset>
-            <Dimension2D width="0" height="40"/>
+            <Dimension2D width="0" height="20"/>
         </pilesFaceUpOffset>
     </PilesView>
     <HBox>

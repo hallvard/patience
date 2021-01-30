@@ -1,5 +1,6 @@
 package no.hal.patience;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.util.List;
@@ -124,5 +125,17 @@ public class PileTest {
         MoveCardsOperation.moveCardsReversed(source, target, 2);
         assertCards(source);
         assertCards(target, d4, h2, s1);
+    }
+
+    @Test
+    public void testTopCard_nonEmptyPile() {
+        Pile pile = new Pile(CardsPredicate.whatever, List.of(s1, h2));
+        assertSame(h2, pile.getTopCard());
+    }
+
+    @Test
+    public void testTopCard_emptyPile() {
+        Pile pile = new Pile(CardsPredicate.whatever, List.of());
+        assertNull(pile.getTopCard());
     }
 }

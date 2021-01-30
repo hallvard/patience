@@ -50,7 +50,7 @@ public class FourXFour extends Patience<FourXFour.PileKinds> {
     }
 
     private PilesOperationRule<PileKinds> stacksToSuitsRule = new MoveCardsOperationRule<PileKinds>(PileKinds.stacks, PileKinds.suits, -1)
-            .options(new MoveCardsOperation.Options().reversed())
+            .options(new MoveCardsOperation.Options().reversed().autoRevealTopCard())
             .movedCardsConstraint(CardsPredicate.faceUp());
     private PilesOperationRule<PileKinds> stacksToStacksRule = new MoveCardsOperationRule<PileKinds>(PileKinds.stacks, PileKinds.stacks)
             .options(new MoveCardsOperation.Options().autoRevealTopCard())

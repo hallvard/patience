@@ -160,7 +160,7 @@ public class Pile implements Iterable<Card>, Cards {
     }
 
     static Card getTopCard(List<Card> thisCards) {
-        return thisCards.get(thisCards.size() - 1);
+        return (thisCards.isEmpty() ? null : thisCards.get(thisCards.size() - 1));
     }
     public Card getTopCard() {
         return Pile.getTopCard(this.cards);

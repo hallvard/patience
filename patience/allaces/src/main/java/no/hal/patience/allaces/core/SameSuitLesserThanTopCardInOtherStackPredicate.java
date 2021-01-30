@@ -7,21 +7,22 @@ import no.hal.patience.CardOrder;
 import no.hal.patience.Pile;
 import no.hal.patience.util.CardsPredicate;
 
-public class LesserThanTopCardInOtherStackPredicate implements CardsPredicate {
+public class SameSuitLesserThanTopCardInOtherStackPredicate implements CardsPredicate {
 
     private CardOrder cardOrder;
     private final Pile[] stacks;
 
-    public LesserThanTopCardInOtherStackPredicate(CardOrder cardOrder, Pile... stacks) {
+    public SameSuitLesserThanTopCardInOtherStackPredicate(CardOrder cardOrder, Pile... stacks) {
         this.cardOrder = cardOrder;
         this.stacks = stacks.clone();
     }
 
     @Override
     public boolean test(List<Card> cards) {
+        Card candidate = cards.get(cards.size() - 1);
         for (var stack : stacks) {
             Card topCard = stack.getTopCard();
-            if (topCard != null && cardOrder.lessThan(cards.get(cards.size() - 1), topCard)) {
+            if (topCard != null && candidate.getSuit() == topCard.getSuit() && cardOrder.lessThan(candidate, topCard)) {
                 return true;
             }
         }

@@ -2,8 +2,6 @@ package no.hal.patience;
 
 public class MoveCardsOperationRule<P extends Enum<P>> extends AbstractMoveCardsOperationRule<P> {
 
-    private MoveCardsOperation.Options options = new MoveCardsOperation.Options();
-
     public MoveCardsOperationRule(Enum<P> sourcePileKind, Enum<P> targetPileKind, int count) {
         super(sourcePileKind, targetPileKind, count);
     }
@@ -11,7 +9,7 @@ public class MoveCardsOperationRule<P extends Enum<P>> extends AbstractMoveCards
         this(sourcePileKind, targetPileKind, -1);
     }
 
-    public PilesOperation createPilesOperation(Pile source, int cardCount, Pile target) {
-        return new MoveCardsOperation(source, target, cardCount).options(options);
+    public PilesOperation createPilesOperation(Pile source, int cardCount, Pile target, int targetPos) {
+        return new MoveCardsOperation(source, cardCount, target, targetPos).options(getOptions());
     }
 }

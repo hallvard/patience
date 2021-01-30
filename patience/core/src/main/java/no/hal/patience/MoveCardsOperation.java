@@ -52,27 +52,33 @@ public class MoveCardsOperation implements PilesOperation {
     }
 
     private Pile source;
-    private Pile target;
     private final int count;
+    private Pile target;
+    private final int targetPos;
 
     private Options options = new Options();
 
-    public MoveCardsOperation(Pile source, Pile target, int count) {
+    public MoveCardsOperation(Pile source, int count, Pile target, int targetPos) {
         this.source = source;
-        this.target = target;
         this.count = count;
+        this.target = target;
+        this.targetPos = targetPos;
     }
 
     public Pile getSource() {
         return source;
     }
 
+    public int getCount() {
+        return count;
+    }
+
     public Pile getTarget() {
         return target;
     }
 
-    public int getCount() {
-        return count;
+    public int getTargetPos() {
+        return targetPos;
     }
 
     public MoveCardsOperation options(Options options) {
@@ -92,7 +98,9 @@ public class MoveCardsOperation implements PilesOperation {
         if (options.isReversed()) {
             Collections.reverse(movedCards);
         }
-        List<Card> newTargetCards = target.addedCards(movedCards);
+        // handle special case, where we're moving within pile
+        List<Card> targetCards = (target == source ? newSourceCards : target.getAllCards());
+        List<Card> newTargetCards = Pile.insertedCards(targetCards, targetPos, movedCards);
         if (! target.validateConstraint(newTargetCards)) {
             return false;
         }
@@ -112,9 +120,9 @@ public class MoveCardsOperation implements PilesOperation {
             }
         }
         if (options.isAutoTurningRevealedTopCard()) {
-            source.revealTopCard();
+            source.revealTopCards(options.getAutoRevealTopCards());
         }
-        target.addCards(movedCards);
+        target.insertCards(targetPos, movedCards);
     }
     
     //

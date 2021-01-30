@@ -110,19 +110,24 @@ public abstract class Patience<P extends Enum<P>> implements Iterable<Pile> {
         pilesOperationRules = new ArrayList<>();
     }
 
-    public boolean updatePilesOperations() {
+    /**
+     * Update the list of possible operations.
+     *
+     * @return null if the game can continue, or a boolean indicating success or failure.
+     */
+    public Boolean updatePilesOperations() {
         if (pilesOperationRules == null) {
             initPilesOperationRules();
         }
-        return true;
+        return null;
     }
 
     //
 
-    protected Collection<Pile> getMoveCardsOperationPiles(Function<MoveCardsOperationRule<P>, Enum<P>> kind) {
+    protected Collection<Pile> getMoveCardsOperationPiles(Function<AbstractMoveCardsOperationRule<P>, Enum<P>> kind) {
         Collection<Pile> piles = new ArrayList<>();
         for (var rule : pilesOperationRules) {
-            if (rule instanceof MoveCardsOperationRule<P> mcor) {
+            if (rule instanceof AbstractMoveCardsOperationRule<P> mcor) {
                 var pileKind = kind.apply(mcor);
                 if (hasPile(pileKind)) {
                     piles.add(getPile(pileKind));
@@ -135,16 +140,16 @@ public abstract class Patience<P extends Enum<P>> implements Iterable<Pile> {
     }
 
     public Collection<Pile> getMoveCardsOperationSourcePiles() {
-        return getMoveCardsOperationPiles(MoveCardsOperationRule::getSourcePileKind);
+        return getMoveCardsOperationPiles(AbstractMoveCardsOperationRule::getSourcePileKind);
     }
 
     public Collection<Pile> getMoveCardsOperationTargetPiles() {
-        return getMoveCardsOperationPiles(MoveCardsOperationRule::getTargetPileKind);
+        return getMoveCardsOperationPiles(AbstractMoveCardsOperationRule::getTargetPileKind);
     }
 
     //
 
-    protected PilesOperation findMoveCardsOperation(Function<PilesOperationRule<P>, PilesOperation> fun) {
+    protected PilesOperation findPilesOperation(Function<PilesOperationRule<P>, PilesOperation> fun) {
         for (var rule : pilesOperationRules) {
             PilesOperation op = fun.apply(rule);
             if (op != null) {
@@ -154,27 +159,24 @@ public abstract class Patience<P extends Enum<P>> implements Iterable<Pile> {
         return null;
     }
 
-    protected PilesOperation findMoveCardsOperation(Pile source, int cardCount) {
-        return findMoveCardsOperation(rule -> rule.accept(this, source, cardCount));
+    protected PilesOperation findPilesOperation(Pile source, int cardCount) {
+        return findPilesOperation(rule -> rule.accept(this, source, cardCount));
     }
 
-    protected PilesOperation findMoveCardsOperation(Pile source, int cardCount, Pile target) {
-        return findMoveCardsOperation(rule -> rule.accept(this, source, cardCount, target, target.getCardCount()));
+    protected PilesOperation findPilesOperation(Pile source, int cardCount, Pile target) {
+        return findPilesOperation(rule -> rule.accept(this, source, cardCount, target, target.getCardCount()));
     }
     
-    public Pile getDefaultTarget(Pile source, int cardCount) {
-        PilesOperation op = findMoveCardsOperation(source, cardCount);
-		return (op instanceof MoveCardsOperation mco ? mco.getTarget() : null);
-	}
-
     public boolean canMoveCards(Pile source, int cardCount, Pile target) {
-		return findMoveCardsOperation(source, cardCount, target) != null;
+		return findPilesOperation(source, cardCount, target) != null;
 	}
 
-	public void moveCards(Pile source, int cardCount, Pile target) {
-        PilesOperation op = findMoveCardsOperation(source, cardCount, target);
+	public boolean moveCards(Pile source, int cardCount, Pile target) {
+        PilesOperation op = (target != null ? findPilesOperation(source, cardCount, target) : findPilesOperation(source, cardCount));
         if (op != null && op.canApply()) {
             op.apply();
+            return true;
         }
+        return false;
     }
 }

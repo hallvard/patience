@@ -37,6 +37,10 @@ public abstract class AbstractMoveCardsOperationRule<P extends Enum<P>> implemen
         return count;
     }
 
+    public MoveCardsOperation.Options getOptions() {
+        return options;
+    }
+
     public AbstractMoveCardsOperationRule<P> options(MoveCardsOperation.Options options) {
         this.options = options;
         return this;
@@ -97,39 +101,6 @@ public abstract class AbstractMoveCardsOperationRule<P extends Enum<P>> implemen
         this.defaultCardCount = defaultCardCount;
     }
 
-    protected boolean canApply(List<Card> source, int cardCount, List<Card> target) {
-        if (sourcePreCondition != null && (! sourcePreCondition.test(source))) {
-            return false;
-        }
-        if (targetPreConditon != null && (! targetPreConditon.test(source))) {
-            return false;
-        }
-    
-        List<Card> movedCards = Pile.getTopCards(source, cardCount);
-        if (movedCardsConstraint != null && (! movedCardsConstraint.test(movedCards))) {
-            return false;
-        }
-        List<Card> pile1 = Pile.removedCards(source, source.size() - cardCount, source.size());
-        if (combinedCardsConstraint != null && (! combinedCardsConstraint.test(Pile.getTopCard(target), Pile.getBottomCard(movedCards)))) {
-            return false;
-        }
-
-        if (sourcePostCondition != null && (! sourcePostCondition.test(pile1))) {
-            return false;
-        }
-        if (options.isReversed()) {
-            Collections.reverse(movedCards);
-        }
-        if (targetPostCondition != null && (! targetPostCondition.test(Pile.addedCards(target, movedCards)))) {
-            return false;
-        }
-        return true;
-    }
-
-    protected boolean canApply(Pile pile1, int cardCount, Pile pile2) {
-        return canApply(pile1.getAllCards(), cardCount, pile2.getAllCards());
-    }
-
     //
 
     protected boolean validateConstraints(Patience<P> patience, Pile source, int cardCount, Pile target, int targetPos, boolean checkSourceConstraints, boolean checkTargetConstraints) {
@@ -149,9 +120,9 @@ public abstract class AbstractMoveCardsOperationRule<P extends Enum<P>> implemen
                 return false;
             }
         }
-        List<Card> topCards = source.getTopCards(cardCount);
+        List<Card> movedCards = source.getTopCards(cardCount);
         if (checkSourceConstraints) {
-            if (movedCardsConstraint != null && (! movedCardsConstraint.test(topCards))) {
+            if (movedCardsConstraint != null && (! movedCardsConstraint.test(movedCards))) {
                 return false;
             }
             List<Card> postSourceCards = source.getCards(0, source.getCardCount() - cardCount);
@@ -167,8 +138,11 @@ public abstract class AbstractMoveCardsOperationRule<P extends Enum<P>> implemen
                 return false;
             }
         }
+        if (getOptions().isReversed()) {
+            Collections.reverse(movedCards);
+        }
         if (checkTargetConstraints) {
-            List<Card> postTargetCards = target.insertedCards(targetPos, topCards);
+            List<Card> postTargetCards = target.insertedCards(targetPos, movedCards);
             // test the pile's own constraint
             if (! target.validateConstraint(postTargetCards)) {
                 return false;
@@ -179,7 +153,10 @@ public abstract class AbstractMoveCardsOperationRule<P extends Enum<P>> implemen
             }
         }
         if (checkSourceConstraints && checkTargetConstraints) {
-            if (combinedCardsConstraint != null && (! combinedCardsConstraint.test(target.getTopCard(), Pile.getBottomCard(topCards)))) {
+            if (source == target && targetPos >= source.getCardCount() - cardCount) {
+                return false;
+            }
+            if (combinedCardsConstraint != null && (! combinedCardsConstraint.test(target.getTopCard(), Pile.getBottomCard(movedCards)))) {
                 return false;
             }
         }
@@ -199,7 +176,7 @@ public abstract class AbstractMoveCardsOperationRule<P extends Enum<P>> implemen
         return 1;
     }
 
-    public abstract PilesOperation createPilesOperation(Pile source, int cardCount, Pile target);
+    public abstract PilesOperation createPilesOperation(Pile source, int cardCount, Pile target, int targetPos);
 
     @Override
     public PilesOperation accept(Patience<P> patience, Pile source, int cardCount) {
@@ -213,7 +190,7 @@ public abstract class AbstractMoveCardsOperationRule<P extends Enum<P>> implemen
         Pile target = null;
         if (patience.hasPile(targetPileKind)) {
             target = patience.getPile(targetPileKind);
-            if (target != null && validateConstraints(patience, source, cardCount, target, target.getCardCount(), true, true)) {
+            if (validateConstraints(patience, source, cardCount, target, target.getCardCount(), true, true)) {
                 possibleTargets.add(target);
             }
         }
@@ -229,10 +206,10 @@ public abstract class AbstractMoveCardsOperationRule<P extends Enum<P>> implemen
         if (possibleTargets.size() >= 1) {
             target = possibleTargets.get(0);
         }
-        if (target == null) {
-            return null;
+        if (target != null) {
+            return createPilesOperation(source, cardCount, target, target.getCardCount());
         }
-        return createPilesOperation(source, cardCount, target);
+        return null;
     }
 
     @Override
@@ -243,6 +220,6 @@ public abstract class AbstractMoveCardsOperationRule<P extends Enum<P>> implemen
         if (! validateConstraints(patience, source, cardCount, target, targetPos, true, true)) {
             return null;
         }
-        return createPilesOperation(source, cardCount, target);
+        return createPilesOperation(source, cardCount, target, targetPos);
     }
 }

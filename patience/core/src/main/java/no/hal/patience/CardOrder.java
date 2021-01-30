@@ -23,7 +23,7 @@ public interface CardOrder extends Function<CardKind, Integer> {
     }
 
     public static CardOrder aceIs(int aceOrdinal) {
-        return of(cardKind -> cardKind.getFace() == 0 ? aceOrdinal : cardKind.getFace());
+        return of(cardKind -> cardKind.getFace() == 1 ? aceOrdinal : cardKind.getFace());
     }
 
     public static CardOrder identity() {
