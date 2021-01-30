@@ -154,5 +154,6 @@
         <module>idiot</module>
         <module>fourxfour</module>
         <module>allaces</module>
+        <module>allonboard</module>
     </modules>
 </project>

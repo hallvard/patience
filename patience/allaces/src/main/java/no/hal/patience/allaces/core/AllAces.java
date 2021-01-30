@@ -35,7 +35,7 @@ public class AllAces extends Patience<AllAces.PileKinds> {
 
     private PilesOperationRule<PileKinds> deckToStacks = new AbstractMoveCardsOperationRule<PileKinds>(PileKinds.deck, PileKinds.stacks, 4) {
         @Override
-        public PilesOperation createPilesOperation(Pile source, int cardCount, Pile target) {
+        public PilesOperation createPilesOperation(Pile source, int cardCount, Pile target, int targetPos) {
             return new DealToPilesOperation(getPile(PileKinds.deck), cardCount, stacks).faceDown(false);
         }
     };

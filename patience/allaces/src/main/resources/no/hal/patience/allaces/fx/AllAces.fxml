@@ -6,7 +6,6 @@
 <?import no.hal.patience.fx.PileView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.geometry.Dimension2D?>
-<?import no.hal.patience.allaces.core.AllAces?>
 
 <VBox fx:id="pilesParent" xmlns:fx="http://javafx.com/fxml/1" fx:controller="no.hal.patience.allaces.fx.AllAcesController">
     <PilesView fx:id="stacksView" pileSpacing="10">

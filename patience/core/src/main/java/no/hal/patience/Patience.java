@@ -110,6 +110,9 @@ public abstract class Patience<P extends Enum<P>> implements Iterable<Pile> {
         pilesOperationRules = new ArrayList<>();
     }
 
+    public void updatePiles() {
+    }
+
     /**
      * Update the list of possible operations.
      *
@@ -163,16 +166,12 @@ public abstract class Patience<P extends Enum<P>> implements Iterable<Pile> {
         return findPilesOperation(rule -> rule.accept(this, source, cardCount));
     }
 
-    protected PilesOperation findPilesOperation(Pile source, int cardCount, Pile target) {
-        return findPilesOperation(rule -> rule.accept(this, source, cardCount, target, target.getCardCount()));
+    protected PilesOperation findPilesOperation(Pile source, int cardCount, Pile target, int targetPos) {
+        return findPilesOperation(rule -> rule.accept(this, source, cardCount, target, targetPos));
     }
     
-    public boolean canMoveCards(Pile source, int cardCount, Pile target) {
-		return findPilesOperation(source, cardCount, target) != null;
-	}
-
 	public boolean moveCards(Pile source, int cardCount, Pile target) {
-        PilesOperation op = (target != null ? findPilesOperation(source, cardCount, target) : findPilesOperation(source, cardCount));
+        PilesOperation op = (target != null ? findPilesOperation(source, cardCount, target, target.getCardCount()) : findPilesOperation(source, cardCount));
         if (op != null && op.canApply()) {
             op.apply();
             return true;
