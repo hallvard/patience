@@ -57,7 +57,7 @@ public class PilesView extends Region {
         FxUtil.setPileViewProperties(PileView::cardScalingProperty, getPilesCardScaling(), getPiles());
         FxUtil.setPileViewProperties(PileView::faceDownOffsetProperty, getPilesFaceDownOffset(), getPiles());
         FxUtil.setPileViewProperties(PileView::faceUpOffsetProperty, getPilesFaceUpOffset(), getPiles());
-        System.out.println("Updating layout for " + piles.size() + " piles");
+        // System.out.println("Updating layout for " + piles.size() + " piles");
 		updateLayout();
 	}
 

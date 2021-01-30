@@ -170,25 +170,27 @@ public abstract class PatienceController<T extends Patience<P>, P extends Enum<P
 			final Point2D localPoint = getLocalPoint(dragging, scenePoint);
 			dragging.stopDragging(localPoint);
 			dragging = null;
-			Pile target = null;
 			if (e.getClickCount() > 1) {
                 if (cardCount <= 1) {
                     cardCount = -1;
                 }
-                target = patience.getDefaultTarget(source, cardCount);
+                doMoveCards(source, cardCount, null);
 			} else if (dropping != null) {
-				target = dropping.getPile();
-			}
-            System.out.println("Source -(" + cardCount + ")> target: " + source + " -> " + target);
-			if (target != null) {
-				patience.moveCards(source, cardCount, target);
-				final Boolean result = getPatience().updatePilesOperations();
-				if (result != null) {
-					doFinished(result);
-				}
-			}
+                doMoveCards(source, cardCount, dropping.getPile());
+            }
 		}
 	}
+
+    protected void doMoveCards(Pile source, int cardCount, Pile target) {
+        System.out.println("Trying source -(" + cardCount + ")> target: " + source + " -> " + target);
+        boolean performed = patience.moveCards(source, cardCount, target);
+        if (performed) {
+            final Boolean result = getPatience().updatePilesOperations();
+            if (result != null) {
+                doFinished(result);
+            }
+        }
+    }
 
 	protected void updateDragStatus(final Pile source, final int sourceCardPos, final Pile target) {
     }

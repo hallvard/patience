@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<?import javafx.scene.layout.VBox?>
-<?import no.hal.patience.fx.PilesView?>
-
-<VBox xmlns:fx="http://javafx.com/fxml/1" fx:controller="no.hal.patience.fx.CardsExampleController">
-	<PilesView fx:id="sources" pileSpacing="20"/>
-	<PilesView fx:id="targets" pileSpacing="10"/>
-</VBox>

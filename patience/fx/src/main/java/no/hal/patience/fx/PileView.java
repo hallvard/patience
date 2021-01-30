@@ -140,7 +140,7 @@ public class PileView extends Region implements CardsListener<Pile> {
 	}
 
 	protected void updateCardViews() {
-        System.out.println("Updating card views for " + getCardNames());
+        // System.out.println("Updating card views for " + getCardNames());
 		final Collection<CardView> newCards = new ArrayList<CardView>();
 		for (var cardName: cardNames) {
 			var faceUp = true;
@@ -160,7 +160,7 @@ public class PileView extends Region implements CardsListener<Pile> {
 			cardNode.setScaleY(getCardScaling());
 			getChildren().add(cardNode);
 		}
-        System.out.println("Updating children layout (" + getChildren().size()  + ") for " + getCardNames());
+        // System.out.println("Updating children layout (" + getChildren().size()  + ") for " + getCardNames());
 		updateLayout();
 	}
 
