@@ -1,53 +1,105 @@
 package no.hal.patience.allonboard.core;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
-import no.hal.patience.AbstractMoveCardsOperationRule;
 import no.hal.patience.Card;
-import no.hal.patience.CardOrder;
 import no.hal.patience.MoveCardsOperationRule;
 import no.hal.patience.Patience;
 import no.hal.patience.Pile;
-import no.hal.patience.PilesOperation;
-import no.hal.patience.PilesOperationRule;
 import no.hal.patience.SuitKind;
-import no.hal.patience.util.SizePredicate;
 
 public class AllOnBoard extends Patience<AllOnBoard.PileKinds> {
 
     private final Pile[][] slots = new Pile[SuitKind.values().length][14];
 
     public enum PileKinds {
-        spadesSlots, heartsSlots, diamondsSlots, clubsSlots;
+        slots;
     }
 
     @Override
     public void initPiles() {
-        List<Card> cards = Pile.deck().getAllCards();
-        int aceCount = 0;
-        for (int cardNum = 0; cardNum < cards.size(); cardNum++) {
-            Card card = cards.get(cardNum);
-            Pile pile = Pile.of(List.of(card));
-            if (card.getFace() == 1) {
-                int row = card.getSuit().ordinal();
-                slots[row][0] = pile;
-                slots[row][1] = Pile.empty();
-                aceCount++;
-            } else {
-                int slotCount = cardNum - aceCount;
-                slots[slotCount / 12][slotCount % 12 + 2] = pile;
+        // create empty piles
+        List<Pile> allPiles = new ArrayList<>();
+        // order matches how PilesView distributes piles in children
+        for (int colNum = 0; colNum < 14; colNum++) {
+            for (int rowNum = 0; rowNum < slots.length; rowNum++) {
+                Pile pile = Pile.empty();
+                slots[rowNum][colNum] = pile;
+                allPiles.add(pile);
             }
         }
-        putPiles(PileKinds.spadesSlots, Arrays.asList(slots[SuitKind.spades.ordinal()]));
-        putPiles(PileKinds.heartsSlots, Arrays.asList(slots[SuitKind.hearts.ordinal()]));
-        putPiles(PileKinds.diamondsSlots, Arrays.asList(slots[SuitKind.diamonds.ordinal()]));
-        putPiles(PileKinds.clubsSlots, Arrays.asList(slots[SuitKind.clubs.ordinal()]));
+        putPiles(PileKinds.slots, allPiles);
+    
+        Pile deck = Pile.deck();
+        // add aces
+        List<Card> aces = deck.takeCards(card -> card.getFace() == 1);
+        for (var ace : aces) {
+            int row = ace.getSuit().ordinal();
+            slots[row][0].addCards(List.of(ace));
+        }
+        // deal remaining cards
+        deal(deck.getAllCards());
     }
+
+    protected void deal(List<Card> cards) {
+        int cardNum = 0;
+        for (int rowNum = 0; rowNum < slots.length; rowNum++) {
+            boolean deal = false;
+            for (int colNum = 0; colNum < slots[rowNum].length; colNum++) {
+                Pile pile = slots[rowNum][colNum];
+                if (deal) {
+                    pile.addCards(List.of(cards.get(cardNum)));
+                    final int row = rowNum, col = colNum;
+                    pile.setConstraints(cs -> cs.isEmpty() || isCorrectCard(row, col, cs.get(0)));
+                    cardNum++;
+                } else if (pile.isEmpty()) {
+                    deal = true;
+                }
+            }
+        }
+    }
+
+    private boolean isCorrectCard(int rowNum, int colNum, Card card) {
+        if (colNum > 0) {
+            Pile pile = slots[rowNum][colNum - 1];
+            if (! pile.isEmpty()) {
+                Card other = pile.getTopCard();
+                if (card.getSuit() == other.getSuit() && card.getFace() == other.getFace() + 1) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    protected List<Card> undeal() {
+        List<Card> cards = new ArrayList<>();
+        for (int rowNum = 0; rowNum < slots.length; rowNum++) {
+            boolean undeal = false;
+            for (int colNum = 1; colNum < slots[rowNum].length; colNum++) {
+                Pile pile = slots[rowNum][colNum];
+                if (undeal) {
+                    cards.addAll(pile.takeCards(pile.getCardCount()));
+                } else if (! pile.isEmpty()) {
+                    Card topCard = pile.getTopCard();
+                    if (! isCorrectCard(rowNum, colNum, topCard)) {
+                        undeal = true;
+                        colNum--;
+                    }
+                }
+                pile.clearConstraints();
+            }
+        }
+        return cards;
+    }
+
+    private MoveCardsOperationRule<PileKinds> slotsToSlots = new MoveCardsOperationRule<>(PileKinds.slots, PileKinds.slots, 1);
 
     @Override
     public void initPilesOperationRules() {
         super.initPilesOperationRules();
+        addPilesOperationRules(List.of(slotsToSlots));
     }
 
     public static void main(String[] args) {

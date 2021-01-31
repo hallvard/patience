@@ -4,8 +4,10 @@
 <?import no.hal.patience.fx.PilesView?>
 
 <VBox fx:id="pilesParent" xmlns:fx="http://javafx.com/fxml/1" fx:controller="no.hal.patience.allonboard.fx.AllOnBoardController">
-    <PilesView fx:id="spadesSlotsView" pileSpacing="1"/>
-    <PilesView fx:id="heartsSlotsView" pileSpacing="1"/>
-    <PilesView fx:id="diamondsSlotsView" pileSpacing="1"/>
-    <PilesView fx:id="clubsSlotsView" pileSpacing="1"/>
+    <PilesView fx:id="slotsView">
+        <PilesView pileSpacing="1"/>
+        <PilesView pileSpacing="1"/>
+        <PilesView pileSpacing="1"/>
+        <PilesView pileSpacing="1"/>
+    </PilesView>
 </VBox>

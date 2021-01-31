@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import no.hal.patience.util.Cards;
 import no.hal.patience.util.CardsListener;
@@ -27,6 +29,17 @@ public class Pile implements Iterable<Card>, Cards {
     @Override
     public String toString() {
         return getClass().getSimpleName() + " of " + cards;
+    }
+
+    public void clearConstraints() {
+        this.constraint = CardsPredicate.whatever;
+    }
+
+    public void setConstraints(CardsPredicate... constraints) {
+        clearConstraints();
+        for (var constraint : constraints) {
+            addConstraint(constraint);
+        }
     }
 
     public void addConstraint(CardsPredicate constraint) {
@@ -184,6 +197,13 @@ public class Pile implements Iterable<Card>, Cards {
         return getCards(0, getCardCount());
     }
 
+    static List<Card> getCards(List<Card> thisCards, Predicate<Card> test) {
+        return thisCards.stream().filter(test).collect(Collectors.toList());
+    }
+    public List<Card> getCards(Predicate<Card> test) {
+        return Pile.getCards(this.cards, test);
+    }
+
     //
 
     static List<Card> replacedCards(List<Card> thisCards, int start, int end, Collection<Card> replacementCards) {
@@ -256,6 +276,24 @@ public class Pile implements Iterable<Card>, Cards {
         return setAllCards(removedCards(start, end));
     }
 
+    //
+
+    static List<Card> removedCards(List<Card> thisCards, Collection<Card> cards) {
+        List<Card> copy = new ArrayList<>(thisCards);
+        copy.removeAll(cards);
+        return copy;
+    }
+
+    List<Card> removedCards(Collection<Card> cards) {
+        return Pile.removedCards(this.cards, cards);
+    }
+
+    public List<Card> removeCards(Collection<Card> cards) {
+        return setAllCards(removedCards(cards));
+    }
+
+    //
+
     public void revealTopCards(int count) {
         int revealCount = 0;
         count = Math.min(count, cards.size());
@@ -308,5 +346,11 @@ public class Pile implements Iterable<Card>, Cards {
 
     public Card takeCard() {
         return takeCards(1).get(0);
+    }
+
+    public List<Card> takeCards(Predicate<Card> test) {
+        List<Card> cards = getCards(test);
+        removeCards(cards);
+        return cards;
     }
 }

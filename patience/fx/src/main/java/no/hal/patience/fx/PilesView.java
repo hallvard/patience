@@ -1,5 +1,8 @@
 package no.hal.patience.fx;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -8,11 +11,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Dimension2D;
-import javafx.scene.layout.Region;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import no.hal.patience.fx.util.FxUtil;
 import no.hal.patience.fx.util.NodeAlignment;
 
-public class PilesView extends Region {
+public class PilesView extends Pane {
+
+    private List<Pane> pileParents = null;
 
 	public PilesView() {
         piles.addListener((ListChangeListener.Change<? extends Object> change) -> updateChildren());
@@ -49,10 +55,29 @@ public class PilesView extends Region {
 
 	//
 
+    private void initPileParents() {
+        pileParents = new ArrayList<>();
+        for (var child : getChildren()) {
+            if (child instanceof Pane pane) {
+                pileParents.add(pane);
+            }
+        }
+        if (pileParents.isEmpty()) {
+            pileParents.add(this);
+        }
+    }
+
 	protected void updateChildren() {
-		getChildren().clear();
-		for (var pile: piles) {
-            getChildren().add(pile);
+        if (pileParents == null) {
+            initPileParents();
+        }
+        for (var pane : pileParents) {
+            pane.getChildren().clear();
+        }
+        int pileNum = 0;
+		for (var pile : piles) {
+            var pane = pileParents.get(pileNum % pileParents.size());
+            pane.getChildren().add(pile);
         }
         FxUtil.setPileViewProperties(PileView::cardScalingProperty, getPilesCardScaling(), getPiles());
         FxUtil.setPileViewProperties(PileView::faceDownOffsetProperty, getPilesFaceDownOffset(), getPiles());
@@ -62,14 +87,16 @@ public class PilesView extends Region {
 	}
 
 	protected void updateLayout() {
-		double x = 0.0, y = 0.0;
-		for (var pile: piles) {
-			pile.setLayoutX(x);
-			pile.setLayoutY(y);
-			x += pile.getBoundsInLocal().getWidth() + getPileSpacing();
-		}
+        double x = 0.0, y = 0.0;
+        for (var child : getChildren()) {
+            if (child instanceof PileView pile) {
+                pile.setLayoutX(x);
+                pile.setLayoutY(y);
+                x += pile.getBoundsInLocal().getWidth() + getPileSpacing();
+            }
+        }
 	}
-	
+
 	//
 	
 	public void locate(NodeAlignment xAlignment, NodeAlignment yAlignment) {
