@@ -155,5 +155,6 @@
         <module>fourxfour</module>
         <module>allaces</module>
         <module>allonboard</module>
+        <module>twodownoneup</module>
     </modules>
 </project>

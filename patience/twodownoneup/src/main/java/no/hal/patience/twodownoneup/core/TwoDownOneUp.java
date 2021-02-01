@@ -1,4 +1,4 @@
-package no.hal.patience.fourxfour.core;
+package no.hal.patience.twodownoneup.core;
 
 import java.util.Arrays;
 import java.util.List;
@@ -15,10 +15,12 @@ import no.hal.patience.util.FacesPredicate;
 import no.hal.patience.util.SizePredicate;
 import no.hal.patience.util.SuitsPredicate;
 
-public class FourXFour extends Patience<FourXFour.PileKinds> {
+public class TwoDownOneUp extends Patience<TwoDownOneUp.PileKinds> {
     
+    private static int CARDS_PR_STACK = 3;
+
     private final Pile[] suits = new Pile[SuitKind.values().length];
-    private final Pile[] stacks = new Pile[8];
+    private final Pile[] stacks = new Pile[(CardKind.values().length + CARDS_PR_STACK - 1) / CARDS_PR_STACK];
 
     public enum PileKinds {
         suits, stacks;
@@ -33,18 +35,12 @@ public class FourXFour extends Patience<FourXFour.PileKinds> {
         putPiles(PileKinds.suits, Arrays.asList(suits));
         
         Pile deck = Pile.deck();
-        for (int rowNum = 0; ! deck.isEmpty(); rowNum++) {
-            List<Card> cards = deck.takeCards(stacks.length);
-            for (int colNum = 0; colNum < cards.size(); colNum++) {
-                if (stacks[colNum] == null) {
-                    stacks[colNum] = Pile.empty();
-                }
-                var card = cards.get(colNum);
-                if (colNum < 4 && rowNum < 4) {
-                    card.turn();
-                }
-                stacks[colNum].addCards(List.of(card));
+        for (int i = 0; i < stacks.length; i++) {
+            List<Card> cards = deck.takeCards(CARDS_PR_STACK);
+            for (int j = 0; j < cards.size() - 1; j++) {
+                cards.get(j).setFaceDown(true);
             }
+            stacks[i] = Pile.of(cards);
         }
         putPiles(PileKinds.stacks, Arrays.asList(stacks));
     }
@@ -52,28 +48,29 @@ public class FourXFour extends Patience<FourXFour.PileKinds> {
     private PilesOperationRule<PileKinds> stacksToSuitsRule = new MoveCardsOperationRule<PileKinds>(PileKinds.stacks, PileKinds.suits)
             .options(new MoveCardsOperation.Options().reversed().autoRevealTopCard())
             .movedCardsConstraint(CardsPredicate.faceUp());
-    private PilesOperationRule<PileKinds> stacksToStacksRule = new MoveCardsOperationRule<PileKinds>(PileKinds.stacks, PileKinds.stacks)
-            .options(new MoveCardsOperation.Options().autoRevealTopCard())
-            .movedCardsConstraint(CardsPredicate.faceUp())
+    private PilesOperationRule<PileKinds> stacksToStacksRule1 = new MoveCardsOperationRule<PileKinds>(PileKinds.stacks, PileKinds.stacks)
+            .options(new MoveCardsOperation.Options().reversed().autoRevealTopCard())
+            .movedCardsConstraint(CardsPredicate.faceUp().and(FacesPredicate.increasing()))
             .targetPreCondition(CardsPredicate.faceUp().ofTopCard())
             .combinedCardsConstraint(SuitsPredicate.same().and(FacesPredicate.decreasing()));
-    private PilesOperationRule<PileKinds> stacksToEmptyStacksRule = new MoveCardsOperationRule<PileKinds>(PileKinds.stacks, PileKinds.stacks)
-            .options(new MoveCardsOperation.Options().autoRevealTopCard())
-            .movedCardsConstraint(CardsPredicate.faceUp().and(FacesPredicate.sameAs(13).ofBottomCard()))
-            .targetPreCondition(SizePredicate.empty());
+    private PilesOperationRule<PileKinds> stacksToStacksRule2 = new MoveCardsOperationRule<PileKinds>(PileKinds.stacks, PileKinds.stacks)
+            .options(new MoveCardsOperation.Options().reversed().autoRevealTopCard())
+            .movedCardsConstraint(CardsPredicate.faceUp().and(FacesPredicate.decreasing()))
+            .targetPreCondition(CardsPredicate.faceUp().ofTopCard())
+            .combinedCardsConstraint(SuitsPredicate.same().and(FacesPredicate.increasing()));
 
     @Override
     public void initPilesOperationRules() {
         super.initPilesOperationRules();
         addPilesOperationRules(List.of(
             stacksToSuitsRule,
-            stacksToStacksRule, stacksToEmptyStacksRule
+            stacksToStacksRule1, stacksToStacksRule1
         ));
     }
 
     public static void main(String[] args) {
-        FourXFour fourXFour = new FourXFour();
-        fourXFour.initPiles();
-        System.out.println(fourXFour);
+        TwoDownOneUp twoDownOneUp = new TwoDownOneUp();
+        twoDownOneUp.initPiles();
+        System.out.println(twoDownOneUp);
     }
 }
