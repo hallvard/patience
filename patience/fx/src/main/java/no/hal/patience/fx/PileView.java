@@ -60,7 +60,7 @@ public class PileView extends Region implements CardsListener<Pile> {
 
 	//
 
-	private final ChangeListener<Object> layoutChangeListener = (observable, oldValue, newValue)  -> updateChildren();
+	private final ChangeListener<Object> layoutChangeListener = (observable, oldValue, newValue)  -> updateLayout();
 
 	//
 
@@ -154,22 +154,18 @@ public class PileView extends Region implements CardsListener<Pile> {
 	}
 
 	protected void updateChildren() {
-		getChildren().clear();
-		for (final CardView cardNode: cards) {
-			cardNode.setScaleX(getCardScaling());
-			cardNode.setScaleY(getCardScaling());
-			getChildren().add(cardNode);
-		}
+        getChildren().clear();
+        getChildren().addAll(cards);
         // System.out.println("Updating children layout (" + getChildren().size()  + ") for " + getCardNames());
 		updateLayout();
 	}
 
 	protected void updateLayout() {
-		double x = 0.0, y = 0.0;
-		double tx = 0.0, ty = 0.0;
-		double width = 0.0, height = 0.0;
-		int cardNum = 0, cardCount = 0;
-		for (final CardView cardNode : cards) {
+        double x = 0.0, y = 0.0;
+        double tx = 0.0, ty = 0.0;
+        double width = 0.0, height = 0.0;
+        int cardNum = 0, cardCount = 0;
+        for (final CardView cardNode : cards) {
 			if (cardNode == dragging) {
 				tx += draggingOffset.getWidth();
                 ty += draggingOffset.getHeight();
@@ -187,12 +183,12 @@ public class PileView extends Region implements CardsListener<Pile> {
             cardNode.setTranslateX(tx);
             cardNode.setTranslateY(ty);
 			final Dimension2D offset = getCardOffset(cardNode, cardNum, cards.size());
-			x += offset.getWidth();
-			y += offset.getHeight();
 			cardNode.setScaleX(getCardScaling());
 			cardNode.setScaleY(getCardScaling());
-			width = Math.max(width, cardNode.getLayoutX() + cardNode.prefWidth(-1));
-			height = Math.max(height, cardNode.getLayoutY() + cardNode.prefHeight(-1));
+			width = Math.max(width, x + cardNode.prefWidth(-1) * getCardScaling());
+			height = Math.max(height, y + cardNode.prefHeight(-1) * getCardScaling());
+			x += offset.getWidth();
+            y += offset.getHeight();
 			cardNum++;
 		}
 		setWidth(width);

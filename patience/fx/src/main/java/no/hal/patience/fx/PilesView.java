@@ -11,55 +11,51 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Dimension2D;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import no.hal.patience.fx.util.FxUtil;
 import no.hal.patience.fx.util.NodeAlignment;
 
 public class PilesView extends Pane {
 
-    private List<Pane> pileParents = null;
+    private List<PilesView> pileParents = null;
 
-	public PilesView() {
+    public PilesView() {
         piles.addListener((ListChangeListener.Change<? extends Object> change) -> updateChildren());
         pileSpacing.addListener(layoutChangeListener);
         registerPileViewPropertyListeners();
-	}
-	
-	private ChangeListener<Object> layoutChangeListener = new ChangeListener<Object>() {
-		@Override
-		public void changed(ObservableValue<? extends Object> observable, Object oldValue, Object newValue) {
-			updateChildren();		
-		}
-	};
+    }
 
-	//
+    private ChangeListener<Object> layoutChangeListener = (observable, oldValue, newValue) -> updateLayout();
 
-	private ObservableList<PileView> piles = FXCollections.observableArrayList();
+    //
 
-	public ObservableList<PileView> getPiles() {
-		return piles;
-	}
+    private ObservableList<PileView> piles = FXCollections.observableArrayList();
 
-	public SimpleDoubleProperty pileSpacing = new SimpleDoubleProperty(1.0);
-	
-	public ObservableValue<Number> pileSpacingProperty() {
-		return pileSpacing;
-	}
-	public double getPileSpacing() {
-		return pileSpacing.get();
-	}
-	public void setPileSpacing(double spacing) {
-		pileSpacing.set(spacing);
-	}
+    public ObservableList<PileView> getPiles() {
+        return piles;
+    }
 
-	//
+    public SimpleDoubleProperty pileSpacing = new SimpleDoubleProperty(1.0);
+
+    public ObservableValue<Number> pileSpacingProperty() {
+        return pileSpacing;
+    }
+
+    public double getPileSpacing() {
+        return pileSpacing.get();
+    }
+
+    public void setPileSpacing(double spacing) {
+        pileSpacing.set(spacing);
+    }
+
+    //
 
     private void initPileParents() {
         pileParents = new ArrayList<>();
-        for (var child : getChildren()) {
-            if (child instanceof Pane pane) {
-                pileParents.add(pane);
+        for (var child : lookupAll("PilesView")) {
+            if (child != this && child instanceof PilesView pilesView) {
+                pileParents.add(pilesView);
             }
         }
         if (pileParents.isEmpty()) {
@@ -67,32 +63,45 @@ public class PilesView extends Pane {
         }
     }
 
-	protected void updateChildren() {
+    protected void updateChildren() {
         if (pileParents == null) {
             initPileParents();
         }
-        for (var pane : pileParents) {
-            pane.getChildren().clear();
+        for (PilesView pileParent : pileParents) {
+            pileParent.getChildren().clear();
         }
         int pileNum = 0;
-		for (var pile : piles) {
-            var pane = pileParents.get(pileNum % pileParents.size());
-            pane.getChildren().add(pile);
+        for (PileView pile : piles) {
+            var pileParent = pileParents.get(pileNum % pileParents.size());
+            pileParent.getChildren().add(pile);
+            pileNum++;
         }
-        FxUtil.setPileViewProperties(PileView::cardScalingProperty, getPilesCardScaling(), getPiles());
-        FxUtil.setPileViewProperties(PileView::faceDownOffsetProperty, getPilesFaceDownOffset(), getPiles());
-        FxUtil.setPileViewProperties(PileView::faceUpOffsetProperty, getPilesFaceUpOffset(), getPiles());
-        // System.out.println("Updating layout for " + piles.size() + " piles");
-		updateLayout();
+        updateLayout();
 	}
 
 	protected void updateLayout() {
+        if (pileParents == null) {
+            initPileParents();
+        }
+        int pileNum = 0;
+        for (PileView pile : piles) {
+            var pileParent = pileParents.get(pileNum % pileParents.size());
+            pile.setCardScaling(pileParent.getPilesCardScaling());
+            pile.setFaceDownOffset(pileParent.getPilesFaceDownOffset());
+            pile.setFaceUpOffset(pileParent.getPilesFaceUpOffset());
+            pileNum++;
+        }
+        for (PilesView pileParent : pileParents) {
+            if (pileParent != this) {
+                pileParent.updateLayout();
+            }
+        }
         double x = 0.0, y = 0.0;
         for (var child : getChildren()) {
             if (child instanceof PileView pile) {
                 pile.setLayoutX(x);
                 pile.setLayoutY(y);
-                x += pile.getBoundsInLocal().getWidth() + getPileSpacing();
+                x += pile.getWidth() + getPileSpacing();
             }
         }
 	}

@@ -21,11 +21,15 @@ public class AllOnBoard extends Patience<AllOnBoard.PileKinds> {
     public void initPiles() {
         // create empty piles
         List<Pile> allPiles = new ArrayList<>();
-        // order matches how PilesView distributes piles in children
+        // piles are added to all piles in order that matches
+        // how PilesView distributes piles in children
         for (int colNum = 0; colNum < 14; colNum++) {
             for (int rowNum = 0; rowNum < slots.length; rowNum++) {
                 Pile pile = Pile.empty();
                 slots[rowNum][colNum] = pile;
+                if (colNum == 0) {
+                    pile.setConstraints(cs -> cs.size() == 1 && cs.get(0).getFace() == 1);
+                }
                 allPiles.add(pile);
             }
         }
@@ -46,16 +50,17 @@ public class AllOnBoard extends Patience<AllOnBoard.PileKinds> {
         int cardNum = 0;
         for (int rowNum = 0; rowNum < slots.length; rowNum++) {
             boolean deal = false;
-            for (int colNum = 0; colNum < slots[rowNum].length; colNum++) {
+            // start at 1 since aces are already placed
+            for (int colNum = 1; colNum < slots[rowNum].length; colNum++) {
                 Pile pile = slots[rowNum][colNum];
                 if (deal) {
                     pile.addCards(List.of(cards.get(cardNum)));
-                    final int row = rowNum, col = colNum;
-                    pile.setConstraints(cs -> cs.isEmpty() || isCorrectCard(row, col, cs.get(0)));
                     cardNum++;
                 } else if (pile.isEmpty()) {
                     deal = true;
                 }
+                final int row = rowNum, col = colNum;
+                pile.setConstraints(cs -> cs.isEmpty() || (cs.size() == 1 && isCorrectCard(row, col, cs.get(0))));
             }
         }
     }
@@ -64,8 +69,8 @@ public class AllOnBoard extends Patience<AllOnBoard.PileKinds> {
         if (colNum > 0) {
             Pile pile = slots[rowNum][colNum - 1];
             if (! pile.isEmpty()) {
-                Card other = pile.getTopCard();
-                if (card.getSuit() == other.getSuit() && card.getFace() == other.getFace() + 1) {
+                Card left = pile.getTopCard();
+                if (card.getSuit() == left.getSuit() && card.getFace() == left.getFace() + 1) {
                     return true;
                 }
             }

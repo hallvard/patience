@@ -35,10 +35,14 @@ public class FxUtil {
         return createPileViews(patience.getPiles(pileCategory));
     }
 
-    public static <T> void setPileViewProperties(Function<PileView, WritableValue<T>> fun, T value, Iterable<PileView> pileViews) {
+    public static <N, T> void setPileViewProperties(Function<N, WritableValue<T>> fun, T value, Iterable<N> pileViews) {
         for (var pileView : pileViews) {
             WritableValue<T> pileViewProp = fun.apply(pileView);
-            pileViewProp.setValue(value);
+            if (pileViewProp != null) {
+                pileViewProp.setValue(value);
+            }
         }
     }
+
+    //
 }

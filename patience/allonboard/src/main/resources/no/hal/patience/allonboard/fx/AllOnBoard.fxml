@@ -5,9 +5,11 @@
 
 <VBox fx:id="pilesParent" xmlns:fx="http://javafx.com/fxml/1" fx:controller="no.hal.patience.allonboard.fx.AllOnBoardController">
     <PilesView fx:id="slotsView">
-        <PilesView pileSpacing="1"/>
-        <PilesView pileSpacing="1"/>
-        <PilesView pileSpacing="1"/>
-        <PilesView pileSpacing="1"/>
+        <VBox>
+            <PilesView pileSpacing="1" pilesCardScaling="0.8"/>
+            <PilesView pileSpacing="1" pilesCardScaling="0.8"/>
+            <PilesView pileSpacing="1" pilesCardScaling="0.8"/>
+            <PilesView pileSpacing="1" pilesCardScaling="0.8"/>
+        </VBox>
     </PilesView>
 </VBox>
