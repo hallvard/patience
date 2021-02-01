@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import no.hal.patience.Card;
+import no.hal.patience.CardKind;
 import no.hal.patience.MoveCardsOperation;
 import no.hal.patience.MoveCardsOperationRule;
 import no.hal.patience.Patience;
@@ -12,7 +13,6 @@ import no.hal.patience.PilesOperationRule;
 import no.hal.patience.SuitKind;
 import no.hal.patience.util.CardsPredicate;
 import no.hal.patience.util.FacesPredicate;
-import no.hal.patience.util.SizePredicate;
 import no.hal.patience.util.SuitsPredicate;
 
 public class TwoDownOneUp extends Patience<TwoDownOneUp.PileKinds> {
@@ -64,7 +64,7 @@ public class TwoDownOneUp extends Patience<TwoDownOneUp.PileKinds> {
         super.initPilesOperationRules();
         addPilesOperationRules(List.of(
             stacksToSuitsRule,
-            stacksToStacksRule1, stacksToStacksRule1
+            stacksToStacksRule1, stacksToStacksRule2
         ));
     }
 
