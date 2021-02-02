@@ -59,11 +59,11 @@ public class Idiot extends Patience<Idiot.PileKinds> {
     }
 
     private AbstractMoveCardsOperationRule<PileKinds> dealRule = new MoveCardsOperationRule<PileKinds>(PileKinds.deck, PileKinds.deck2, -1)
+            .options(new MoveCardsOperation.Options().reversed().turning());
+    private PilesOperationRule<PileKinds> undealRule = new MoveCardsOperationRule<PileKinds>(PileKinds.deck2, PileKinds.deck, -1)
             .options(new MoveCardsOperation.Options().reversed().turning())
             .targetPreCondition(SizePredicate.empty())
             .sourcePostCondition(SizePredicate.empty());
-    private PilesOperationRule<PileKinds> undealRule = new MoveCardsOperationRule<PileKinds>(PileKinds.deck2, PileKinds.deck, -1)
-            .options(new MoveCardsOperation.Options().reversed().turning());
     private PilesOperationRule<PileKinds> extrasToStacksRule = new MoveCardsOperationRule<PileKinds>(PileKinds.extras, PileKinds.stacks, 1);
     private PilesOperationRule<PileKinds> extrasToSuitsRule = new MoveCardsOperationRule<PileKinds>(PileKinds.extras, PileKinds.suits, 1);
     private AbstractMoveCardsOperationRule<PileKinds> deck2ToStacksRule = new MoveCardsOperationRule<PileKinds>(PileKinds.deck2, PileKinds.stacks, 1);

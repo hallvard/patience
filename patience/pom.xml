@@ -157,5 +157,6 @@
         <module>allonboard</module>
         <module>twodownoneup</module>
         <module>freecell</module>
+        <module>solitaire</module>
     </modules>
 </project>
