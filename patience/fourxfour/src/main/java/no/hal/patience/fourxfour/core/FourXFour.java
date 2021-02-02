@@ -46,7 +46,7 @@ public class FourXFour extends Patience<FourXFour.PileKinds> {
                 stacks[colNum].addCards(List.of(card));
             }
         }
-        putPiles(PileKinds.stacks, Arrays.asList(stacks));
+        putPiles(PileKinds.stacks, stacks);
     }
 
     private PilesOperationRule<PileKinds> stacksToSuitsRule = new MoveCardsOperationRule<PileKinds>(PileKinds.stacks, PileKinds.suits)

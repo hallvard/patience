@@ -1,11 +1,11 @@
 package no.hal.patience.solitaire.core;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 import no.hal.patience.AbstractMoveCardsOperationRule;
 import no.hal.patience.Card;
-import no.hal.patience.CardOrder;
 import no.hal.patience.MoveCardsOperation;
 import no.hal.patience.MoveCardsOperationRule;
 import no.hal.patience.Patience;
@@ -35,12 +35,14 @@ public class Solitaire extends Patience<Solitaire.PileKinds> {
         putPiles(PileKinds.suits, suits);
         
         Pile deck = Pile.deck();
+        CardsPredicate stackConstraints = SuitsPredicate.alternatingColor().and(FacesPredicate.decreasing()).ofReveleadCards();
         for (int i = 0; i < stacks.length; i++) {
             List<Card> cards = deck.takeCards(i + 1);
             for (int j = 0; j < cards.size() - 1; j++) {
                 cards.get(j).setFaceDown(true);
             }
-            stacks[i] = Pile.of(cards);
+            Pile pile = Pile.of(cards).constraints(stackConstraints);
+            stacks[i] = pile;
         }
         putPiles(PileKinds.stacks, stacks);
         
@@ -51,17 +53,23 @@ public class Solitaire extends Patience<Solitaire.PileKinds> {
         MoveCardsOperation.moveCardsReversedTurning(deck, getPile(PileKinds.deck2), 3);
     }
 
+    /*
+    private long getSafeKingsCount() {
+        return Stream.of(stacks).map(Pile::getBottomCard).filter(Objects::nonNull).filter(Card.hasFace(13)).count()
+            + Stream.of(suits).map(Pile::getTopCard).filter(Objects::nonNull).filter(Card.hasFace(13)).count();
+    }
+    */
+
     private AbstractMoveCardsOperationRule<PileKinds> dealRule = new MoveCardsOperationRule<PileKinds>(PileKinds.deck, PileKinds.deck2, -1)
             .options(new MoveCardsOperation.Options().reversed().turning());
             private PilesOperationRule<PileKinds> undealRule = new MoveCardsOperationRule<PileKinds>(PileKinds.deck2, PileKinds.deck, -1)
             .options(new MoveCardsOperation.Options().reversed().turning())
             .targetPreCondition(SizePredicate.empty())
             .sourcePostCondition(SizePredicate.empty());
-            private AbstractMoveCardsOperationRule<PileKinds> deck2ToStacksRule = new MoveCardsOperationRule<PileKinds>(PileKinds.deck2, PileKinds.stacks, 1)
-    private PilesOperationRule<PileKinds> deck2ToEmptyStacksRule = new MoveCardsOperationRule<PileKinds>(PileKinds.deck2, PileKinds.stacks)
-            .movedCardsConstraint(FacesPredicate.sameAs(13).ofTopCard())
+    private PilesOperationRule<PileKinds> deck2ToStacksRule = new MoveCardsOperationRule<PileKinds>(PileKinds.deck2, PileKinds.stacks, 1)
+            .targetPreCondition(SizePredicate.nonEmpty());
+    private AbstractMoveCardsOperationRule<PileKinds> deck2ToEmptyStacksRule = new MoveCardsOperationRule<PileKinds>(PileKinds.deck2, PileKinds.stacks, 1)
             .targetPreCondition(SizePredicate.empty());
-            .combinedCardsConstraint(SuitsPredicate.alternatingColor().and(FacesPredicate.decreasing()));
     private PilesOperationRule<PileKinds> deck2ToSuitsRule = new MoveCardsOperationRule<PileKinds>(PileKinds.deck2, PileKinds.suits, 1);
     private PilesOperationRule<PileKinds> stacksToSuitsRule = new MoveCardsOperationRule<PileKinds>(PileKinds.stacks, PileKinds.suits, 1)
             .options(new MoveCardsOperation.Options().autoRevealTopCard())
@@ -69,25 +77,27 @@ public class Solitaire extends Patience<Solitaire.PileKinds> {
     private PilesOperationRule<PileKinds> stacksToStacksRule = new MoveCardsOperationRule<PileKinds>(PileKinds.stacks, PileKinds.stacks)
             .options(new MoveCardsOperation.Options().autoRevealTopCard())
             .movedCardsConstraint(CardsPredicate.faceUp())
-            .combinedCardsConstraint(SuitsPredicate.alternatingColor().and(FacesPredicate.decreasing()));
+            .targetPreCondition(SizePredicate.nonEmpty());
     private PilesOperationRule<PileKinds> stacksToEmptyStacksRule = new MoveCardsOperationRule<PileKinds>(PileKinds.stacks, PileKinds.stacks)
             .options(new MoveCardsOperation.Options().autoRevealTopCard())
             .movedCardsConstraint(CardsPredicate.faceUp().and(FacesPredicate.sameAs(13).ofBottomCard()))
             .targetPreCondition(SizePredicate.empty());
+    
     @Override
     public void initPilesOperationRules() {
         super.initPilesOperationRules();
         dealRule.setDefaultCardCount(size -> size >= 3 ? 3 : 1);
         addPilesOperationRules(List.of(
             dealRule, undealRule,
-            deck2ToStacksRule, deck2ToSuitsRule,
-            stacksToStacksRule, stacksToSuitsRule
+            deck2ToStacksRule, deck2ToEmptyStacksRule, deck2ToSuitsRule,
+            stacksToStacksRule, stacksToEmptyStacksRule, stacksToSuitsRule
         ));
     }
 
     @Override
     public Boolean updatePilesOperations() {
         super.updatePilesOperations();
+        // deck2ToEmptyStacksRule.movedCardsConstraint(getSafeKingsCount() == 4 ? FacesPredicate.sameAs(13) : null);
         return null;
     }
 

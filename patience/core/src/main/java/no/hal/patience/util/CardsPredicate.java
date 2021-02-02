@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import no.hal.patience.Card;
+import no.hal.patience.Pile;
 
 @FunctionalInterface
 public interface CardsPredicate extends Predicate<List<Card>> {
@@ -40,6 +41,10 @@ public interface CardsPredicate extends Predicate<List<Card>> {
     }
     default CardsPredicate ofTopCard() {
         return ofTopCards(1);
+    }
+
+    default CardsPredicate ofReveleadCards() {
+        return cards -> test(Pile.getRevealedCards(cards));
     }
 
     default CardsPredicate and(CardsPredicate other) {

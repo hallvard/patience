@@ -2,6 +2,7 @@ package no.hal.patience;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class Card {
@@ -60,5 +61,15 @@ public class Card {
 
     public void turn() {
         faceDown = ! faceDown;
+    }
+
+    //
+
+    public static Predicate<Card> hasSuit(SuitKind suit) {
+        return card -> card.getSuit() == suit;
+    }
+
+    public static Predicate<Card> hasFace(int face) {
+        return card -> card.getFace() == face;
     }
 }

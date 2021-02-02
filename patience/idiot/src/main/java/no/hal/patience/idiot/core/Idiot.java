@@ -45,7 +45,7 @@ public class Idiot extends Patience<Idiot.PileKinds> {
             stacks[i] = Pile.empty(SuitsPredicate.alternatingColor().and(FacesPredicate.decreasing(cardOrder)));
             MoveCardsOperation.moveCard(deck, stacks[i]);
         }
-        putPiles(PileKinds.stacks, Arrays.asList(stacks));
+        putPiles(PileKinds.stacks, stacks);
         
         List<Card> extraCards = deck.takeCards(12);
         extras = Pile.of(extraCards);

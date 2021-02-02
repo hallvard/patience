@@ -42,7 +42,7 @@ public class TwoDownOneUp extends Patience<TwoDownOneUp.PileKinds> {
             }
             stacks[i] = Pile.of(cards);
         }
-        putPiles(PileKinds.stacks, Arrays.asList(stacks));
+        putPiles(PileKinds.stacks, stacks);
     }
 
     private PilesOperationRule<PileKinds> stacksToSuitsRule = new MoveCardsOperationRule<PileKinds>(PileKinds.stacks, PileKinds.suits)

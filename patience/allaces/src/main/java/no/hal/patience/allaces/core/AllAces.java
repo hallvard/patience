@@ -28,7 +28,7 @@ public class AllAces extends Patience<AllAces.PileKinds> {
         for (int i = 0; i < stacks.length; i++) {
             stacks[i] = Pile.empty();
         }
-        putPiles(PileKinds.stacks, Arrays.asList(stacks));
+        putPiles(PileKinds.stacks, stacks);
         putPile(PileKinds.deck2, Pile.empty());
         DealToPilesOperation.deal(deck, stacks.length, false, stacks);
     }

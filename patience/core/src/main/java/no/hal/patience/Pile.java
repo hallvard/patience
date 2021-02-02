@@ -42,6 +42,11 @@ public class Pile implements Iterable<Card>, Cards {
         }
     }
 
+    public Pile constraints(CardsPredicate... constraints) {
+        setConstraints(constraints);
+        return this;
+    }
+
     public void addConstraint(CardsPredicate constraint) {
         if (this.constraint == CardsPredicate.whatever) {
             this.constraint = constraint;
@@ -204,6 +209,10 @@ public class Pile implements Iterable<Card>, Cards {
         return Pile.getCards(this.cards, test);
     }
 
+    public static List<Card> getRevealedCards(List<Card> thisCards) {
+        return getCards(thisCards, Predicate.not(Card::isFaceDown));
+    }
+
     //
 
     static List<Card> replacedCards(List<Card> thisCards, int start, int end, Collection<Card> replacementCards) {
@@ -352,5 +361,30 @@ public class Pile implements Iterable<Card>, Cards {
         List<Card> cards = getCards(test);
         removeCards(cards);
         return cards;
+    }
+
+    //
+
+    public static int countIf(Predicate<Card> test, List<Card> thisCards) {
+        int count = 0;
+        for (Card card : thisCards) {
+            if (test.test(card)) {
+                count++;
+            }
+        }
+        return count;
+    }
+    public int countIf(Predicate<Card> test) {
+        return countIf(test, this.cards);
+    }
+
+    public static int countIf(Predicate<Pile> test, Iterable<Pile> piles) {
+        int count = 0;
+        for (Pile pile : piles) {
+            if (test.test(pile)) {
+                count++;
+            }
+        }
+        return count;
     }
 }
