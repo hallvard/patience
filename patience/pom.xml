@@ -156,5 +156,6 @@
         <module>allaces</module>
         <module>allonboard</module>
         <module>twodownoneup</module>
+        <module>freecell</module>
     </modules>
 </project>

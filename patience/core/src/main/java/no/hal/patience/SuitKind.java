@@ -17,6 +17,10 @@ public enum SuitKind {
         return color;
     }
 
+    public String getShortName() {
+        return String.valueOf(Character.toUpperCase(name().charAt(0)));
+    }
+
 	public boolean isOppositeColor(SuitKind suit) {
 		return getColor() != suit.getColor();
 	}

@@ -33,6 +33,10 @@ public enum CardKind {
         return suit.isOppositeColor(cardKind.suit);
     }
 
+    public static CardKind valueOf(SuitKind suit, int face) {
+        return values()[suit.ordinal() * 13 + face - 1];
+    }
+
     //
 
     public final static CardKind[]

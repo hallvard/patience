@@ -1,6 +1,7 @@
 package no.hal.patience;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,6 +33,9 @@ public abstract class Patience<P extends Enum<P>> implements Iterable<Pile> {
 
     protected void putPiles(Enum<P> category, Collection<Pile> piles) {
         this.piless.put(category, piles);
+    }
+    protected void putPiles(Enum<P> category, Pile[] piles) {
+        putPiles(category, Arrays.asList(piles));
     }
 
     protected void putPile(Enum<P> name, Pile pile) {

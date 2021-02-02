@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import no.hal.patience.fx.PilesView?>
+<?import javafx.geometry.Dimension2D?>
+
+<VBox fx:id="pilesParent" xmlns:fx="http://javafx.com/fxml/1" fx:controller="no.hal.patience.freecell.fx.FreeCellController">
+    <PilesView fx:id="suitsView" pileSpacing="20">
+        <pilesFaceUpOffset>
+            <Dimension2D width="1" height="0"/>
+        </pilesFaceUpOffset>
+    </PilesView>
+    <PilesView fx:id="freeCellsView" pileSpacing="20"/>
+    <PilesView fx:id="stacksView" pileSpacing="10">
+        <pilesFaceUpOffset>
+            <Dimension2D width="0" height="40"/>
+        </pilesFaceUpOffset>
+    </PilesView>
+</VBox>

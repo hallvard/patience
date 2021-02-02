@@ -34,11 +34,11 @@ public class SuitsPredicateTest {
 
     @Test
     public void testAlternatingColor_DSHCSucceeds() {
-        assertTrue(SuitsPredicate.alernatingColor().test(Card.cards("D1", "S7", "H2", "C3")));
+        assertTrue(SuitsPredicate.alternatingColor().test(Card.cards("D1", "S7", "H2", "C3")));
     }
 
     @Test
     public void testAlternatingColor_DSCHFails() {
-        assertFalse(SuitsPredicate.alernatingColor().test(Card.cards("D1", "S7", "C3", "H2")));
+        assertFalse(SuitsPredicate.alternatingColor().test(Card.cards("D1", "S7", "C3", "H2")));
     }
 }

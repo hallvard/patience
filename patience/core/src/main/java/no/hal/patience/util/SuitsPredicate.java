@@ -64,7 +64,7 @@ public abstract class SuitsPredicate implements CardsPredicate {
         return sameSuit(suitKind);
     }
 
-    public static SuitsPredicate alernatingColor() {
+    public static SuitsPredicate alternatingColor() {
         return new SuitsPredicate(null) {
             protected boolean test(SuitKind initialSuitKind, SuitKind actualSuitKind, int pos) {
                 return (initialSuitKind.getColor() == actualSuitKind.getColor() == (pos % 2 == 0));
