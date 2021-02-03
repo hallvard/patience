@@ -18,11 +18,16 @@ public class FreeCellController extends PatienceController<FreeCell, FreeCell.Pi
     @FXML
     private Parent pilesParent;
 
+    @Override
+    public Parent getPilesParent() {
+        return pilesParent;
+    }
+
     @FXML private PilesView suitsView;
     @FXML private PilesView stacksView;
 
     @FXML
 	protected void initialize() {
-        super.initialize(pilesParent);
+        super.initialize();
     }
 }

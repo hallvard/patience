@@ -19,12 +19,17 @@ public class AllAcesController extends PatienceController<AllAces, AllAces.PileK
     @FXML
     private Parent pilesParent;
 
+    @Override
+    protected Parent getPilesParent() {
+        return pilesParent;
+    }
+
     @FXML private PilesView stacksView;
     @FXML private PileView deckView;
     @FXML private PileView deck2View;
 
     @FXML
 	protected void initialize() {
-        super.initialize(pilesParent);
+        super.initialize();
     }
 }

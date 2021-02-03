@@ -18,11 +18,15 @@ public class FourXFourController extends PatienceController<FourXFour, FourXFour
     @FXML
     private Parent pilesParent;
 
+    public Parent getPilesParent() {
+        return pilesParent;
+    }
+
     @FXML private PilesView suitsView;
     @FXML private PilesView stacksView;
 
     @FXML
 	protected void initialize() {
-        super.initialize(pilesParent);
+        super.initialize();
     }
 }

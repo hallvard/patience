@@ -28,19 +28,15 @@ public abstract class PatienceController<T extends Patience<P>, P extends Enum<P
 		return patience;
 	}
 
-	protected void initialize(Parent pilesParent) {
+    protected abstract Parent getPilesParent();
+
+	protected void initialize() {
         patience = createPatience();
         patience.initPiles();
         patience.updatePilesOperations();
 
-        if (pilesParent != null) {
-            createPileViews(pilesParent);
-            registerMouseListeners(pilesParent);
-        }
-    }
-
-    protected void initialize() {
-        initialize(null);
+        createPileViews(getPilesParent());
+        registerMouseListeners(getPilesParent());
     }
 
     private Map<Pile, PileView> pileViewMap = null;
@@ -126,12 +122,20 @@ public abstract class PatienceController<T extends Patience<P>, P extends Enum<P
         // System.out.println("mousePressed.dragging=" + dragging);
 		if (dragging != null) {
 			e.consume();
-			dragging.startDragging(scenePoint, null, -1);
+            dragging.startDragging(scenePoint, null, -1);
+            updateViewOrder(dragging, -1.0);
 			updateDragStatus(dragging.getPile(), dragging.getDragPos(), null);
 		}
 	}
 
-	private Point2D getScenePoint(final MouseEvent e) {
+	private void updateViewOrder(Node node, double viewOrder) {
+        while (node != getPilesParent()) {
+            node.setViewOrder(viewOrder);
+            node = node.getParent();
+        }
+    }
+
+    private Point2D getScenePoint(final MouseEvent e) {
 		return new Point2D(e.getSceneX(), e.getSceneY());
 	}
 
@@ -168,7 +172,8 @@ public abstract class PatienceController<T extends Patience<P>, P extends Enum<P
 			final Pile source = dragging.getPile();
 			int cardCount = source.getCardCount() - dragging.getDragPos();
 			final Point2D localPoint = getLocalPoint(dragging, scenePoint);
-			dragging.stopDragging(localPoint);
+            dragging.stopDragging(localPoint);
+            updateViewOrder(dragging, 0.0);
 			dragging = null;
 			if (e.getClickCount() > 1) {
                 if (cardCount <= 1) {

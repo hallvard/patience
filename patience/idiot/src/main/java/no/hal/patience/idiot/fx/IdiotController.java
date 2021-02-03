@@ -19,6 +19,11 @@ public class IdiotController extends PatienceController<Idiot, Idiot.PileKinds> 
     @FXML
     private Parent pilesParent;
 
+    @Override
+    public Parent getPilesParent() {
+        return pilesParent;
+    }
+
     @FXML private PilesView suitsView;
     @FXML private PilesView stacksView;
     @FXML private PileView extrasView;
@@ -27,6 +32,6 @@ public class IdiotController extends PatienceController<Idiot, Idiot.PileKinds> 
 
     @FXML
 	protected void initialize() {
-        super.initialize(pilesParent);
+        super.initialize();
     }
 }

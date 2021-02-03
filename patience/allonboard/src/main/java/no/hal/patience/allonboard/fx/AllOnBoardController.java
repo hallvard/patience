@@ -19,12 +19,16 @@ public class AllOnBoardController extends PatienceController<AllOnBoard, AllOnBo
     @FXML
     private Parent pilesParent;
 
+    public Parent getPilesParent() {
+        return pilesParent;
+    }
+
     @FXML private PilesView stacksView;
     @FXML private PileView deckView;
     @FXML private PileView deck2View;
 
     @FXML
 	protected void initialize() {
-        super.initialize(pilesParent);
+        super.initialize();
     }
 }
