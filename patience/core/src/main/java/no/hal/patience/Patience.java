@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public abstract class Patience<P extends Enum<P>> implements Iterable<Pile> {
     
@@ -106,6 +107,14 @@ public abstract class Patience<P extends Enum<P>> implements Iterable<Pile> {
 
     private Collection<PilesOperationRule<P>> pilesOperationRules = null;
 
+    protected void clearPilesOperationRules() {
+        if (pilesOperationRules == null) {
+            initPilesOperationRules();
+        } else {
+            pilesOperationRules.clear();
+        }
+    }
+
     protected void addPilesOperationRules(Collection<PilesOperationRule<P>> rules) {
         pilesOperationRules.addAll(rules);
     }
@@ -166,20 +175,66 @@ public abstract class Patience<P extends Enum<P>> implements Iterable<Pile> {
         return null;
     }
 
-    protected PilesOperation findPilesOperation(Pile source, int cardCount) {
+    //
+
+    public PilesOperation findPilesOperation(Pile source, int cardCount) {
         return findPilesOperation(rule -> rule.accept(this, source, cardCount));
     }
 
-    protected PilesOperation findPilesOperation(Pile source, int cardCount, Pile target, int targetPos) {
+    public PilesOperation findPilesOperation(Pile source, int cardCount, Pile target, int targetPos) {
         return findPilesOperation(rule -> rule.accept(this, source, cardCount, target, targetPos));
     }
-    
-	public boolean moveCards(Pile source, int cardCount, Pile target) {
-        PilesOperation op = (target != null ? findPilesOperation(source, cardCount, target, target.getCardCount()) : findPilesOperation(source, cardCount));
-        if (op != null && op.canApply()) {
+
+    public boolean performPilesOperation(PilesOperation op) {
+        if (op.canApply()) {
             op.apply();
             return true;
         }
         return false;
+    }
+
+    public Boolean performPilesOperationAndUpdate(PilesOperation op) {
+        if (performPilesOperation(op)) {
+            return updatePilesOperations();
+        }
+        return null;
+    }
+
+    //
+
+    public static int count(Predicate<Pile> test, Iterable<Pile> piles) {
+        int count = 0;
+        for (Pile pile : piles) {
+            if (test.test(pile)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public static boolean every(Predicate<Pile> test, Iterable<Pile> piles) {
+        for (Pile pile : piles) {
+            if (! test.test(pile)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    public boolean every(Predicate<Pile> test, P category) {
+        return Patience.every(test, getPiles(category));
+    }
+
+    public static boolean everyCardCount(Predicate<Integer> test, Iterable<Pile> piles) {
+        return every(pile -> test.test(pile.getCardCount()), piles);
+    }
+    public boolean everyCardCount(Predicate<Integer> test, P category) {
+        return Patience.everyCardCount(test, getPiles(category));
+    }
+
+    public static boolean everyEmpty(Iterable<Pile> piles) {
+        return every(Pile::isEmpty, piles);
+    }
+    public boolean everyEmpty(P category) {
+        return Patience.everyEmpty(getPiles(category));
     }
 }

@@ -1,8 +1,6 @@
 package no.hal.patience.solitaire.core;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Stream;
 
 import no.hal.patience.AbstractMoveCardsOperationRule;
 import no.hal.patience.Card;
@@ -96,9 +94,12 @@ public class Solitaire extends Patience<Solitaire.PileKinds> {
 
     @Override
     public Boolean updatePilesOperations() {
-        super.updatePilesOperations();
+        if (everyCardCount(count -> count == 13, PileKinds.suits)) {
+            clearPilesOperationRules();
+            return true;
+        }
         // deck2ToEmptyStacksRule.movedCardsConstraint(getSafeKingsCount() == 4 ? FacesPredicate.sameAs(13) : null);
-        return null;
+        return super.updatePilesOperations();
     }
 
     public static void main(String[] args) {

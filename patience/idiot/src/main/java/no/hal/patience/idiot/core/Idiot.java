@@ -85,6 +85,10 @@ public class Idiot extends Patience<Idiot.PileKinds> {
 
     @Override
     public Boolean updatePilesOperations() {
+        if (everyCardCount(count -> count == 13, PileKinds.suits)) {
+            clearPilesOperationRules();
+            return true;
+        }
         super.updatePilesOperations();
         deck2ToStacksRule.targetPreCondition(SizePredicate.atLeast(getPile(PileKinds.extras).isEmpty() ? 0 : 1));
         if (getPile(PileKinds.deck).getCardCount() + getPile(PileKinds.deck2).getCardCount() > 0) {

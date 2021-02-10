@@ -365,7 +365,7 @@ public class Pile implements Iterable<Card>, Cards {
 
     //
 
-    public static int countIf(Predicate<Card> test, List<Card> thisCards) {
+    public static int count(Predicate<Card> test, List<Card> thisCards) {
         int count = 0;
         for (Card card : thisCards) {
             if (test.test(card)) {
@@ -374,17 +374,7 @@ public class Pile implements Iterable<Card>, Cards {
         }
         return count;
     }
-    public int countIf(Predicate<Card> test) {
-        return countIf(test, this.cards);
-    }
-
-    public static int countIf(Predicate<Pile> test, Iterable<Pile> piles) {
-        int count = 0;
-        for (Pile pile : piles) {
-            if (test.test(pile)) {
-                count++;
-            }
-        }
-        return count;
+    public int count(Predicate<Card> test) {
+        return count(test, this.cards);
     }
 }

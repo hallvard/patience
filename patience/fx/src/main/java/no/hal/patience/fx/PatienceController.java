@@ -14,6 +14,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.NonInvertibleTransformException;
 
 import no.hal.patience.Pile;
+import no.hal.patience.PilesOperation;
 import no.hal.patience.fx.util.FxUtil;
 import no.hal.patience.fx.util.NodeAlignment;
 import no.hal.patience.Patience;
@@ -174,28 +175,26 @@ public abstract class PatienceController<T extends Patience<P>, P extends Enum<P
 			final Point2D localPoint = getLocalPoint(dragging, scenePoint);
             dragging.stopDragging(localPoint);
             updateViewOrder(dragging, 0.0);
-			dragging = null;
+            dragging = null;
+            PilesOperation op = null;
 			if (e.getClickCount() > 1) {
                 if (cardCount <= 1) {
                     cardCount = -1;
                 }
-                doMoveCards(source, cardCount, null);
+                System.out.println("Trying source -(" + cardCount + ")>: " + source);
+                op = patience.findPilesOperation(source, cardCount);
 			} else if (dropping != null) {
-                doMoveCards(source, cardCount, dropping.getPile());
+                System.out.println("Trying source -(" + cardCount + ")> target: " + source + " -> " + dropping.getPile());
+                op = patience.findPilesOperation(source, cardCount, dropping.getPile(), -1);
+            }
+            if (op != null) {
+                Boolean result = patience.performPilesOperationAndUpdate(op);
+                if (result != null) {
+                    doFinished(result);
+                }
             }
 		}
 	}
-
-    protected void doMoveCards(Pile source, int cardCount, Pile target) {
-        System.out.println("Trying source -(" + cardCount + ")> target: " + source + " -> " + target);
-        boolean performed = patience.moveCards(source, cardCount, target);
-        if (performed) {
-            final Boolean result = getPatience().updatePilesOperations();
-            if (result != null) {
-                doFinished(result);
-            }
-        }
-    }
 
 	protected void updateDragStatus(final Pile source, final int sourceCardPos, final Pile target) {
     }

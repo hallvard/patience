@@ -68,6 +68,15 @@ public class TwoDownOneUp extends Patience<TwoDownOneUp.PileKinds> {
         ));
     }
 
+    @Override
+    public Boolean updatePilesOperations() {
+        if (everyCardCount(count -> count == 13, PileKinds.suits)) {
+            clearPilesOperationRules();
+            return true;
+        }
+        return super.updatePilesOperations();
+    }
+
     public static void main(String[] args) {
         TwoDownOneUp twoDownOneUp = new TwoDownOneUp();
         twoDownOneUp.initPiles();
